@@ -1,17 +1,22 @@
 package ruclinic;
 
+import util.Date;
+import util.Timeslot;
+
 /**
  * Represents an appointment in the clinic.
+ * 
+ * Refactored to replace Profile with Person (as Patient and Provider) and
+ * support both Doctor and Technician as providers.
  * 
  * @author Paldeep Sekhon
  * @author Aditya Ponni
  */
-
 public class Appointment implements Comparable<Appointment> {
-    private Date date;
-    private Timeslot timeslot;
-    private Profile patient;
-    private Provider provider;
+    protected Date date; // Protected so subclasses can access it
+    protected Timeslot timeslot; // Protected
+    protected Person patient; // Changed from Profile to Person, Protected
+    protected Provider provider; // Can be either a Doctor or Technician, Protected
 
     /**
      * Constructs an Appointment with the specified date, timeslot, patient, and
@@ -20,9 +25,9 @@ public class Appointment implements Comparable<Appointment> {
      * @param date     the date of the appointment
      * @param timeslot the timeslot of the appointment
      * @param patient  the patient's profile for the appointment
-     * @param provider the provider handling the appointment
+     * @param provider the provider handling the appointment (either Doctor or Technician)
      */
-    public Appointment(Date date, Timeslot timeslot, Profile patient, Provider provider) {
+    public Appointment(Date date, Timeslot timeslot, Person patient, Provider provider) {
         this.date = date;
         this.timeslot = timeslot;
         this.patient = patient;
@@ -89,10 +94,10 @@ public class Appointment implements Comparable<Appointment> {
         return String.format("%s %s %s %s %s [%s, %s, %s %s, %s]",
                 this.date, // Appointment date
                 this.timeslot, // Timeslot
-                this.patient.getFname(), // Patient's first name
-                this.patient.getLname(), // Patient's last name
+                this.patient.getFirstName(), // Patient's first name
+                this.patient.getLastName(), // Patient's last name
                 this.patient.getDob(), // Patient's date of birth
-                this.provider.name(), // Provider's name
+                this.provider.getName(), // Provider's name
                 this.provider.getLocation().getCity(), // Provider's location city
                 this.provider.getLocation().getCounty(), // Provider's location county
                 this.provider.getLocation().getZip(), // Provider's location ZIP code
@@ -100,58 +105,28 @@ public class Appointment implements Comparable<Appointment> {
         );
     }
 
-    /**
-     * Gets the date of the appointment.
-     *
-     * @return the date of the appointment
-     */
+    // Getter and Setter methods
+
     public Date getDate() {
         return date;
     }
 
-    /**
-     * Gets the timeslot of the appointment.
-     *
-     * @return the timeslot of the appointment
-     */
     public Timeslot getTimeslot() {
         return timeslot;
     }
 
-    /**
-     * Gets the patient profile associated with the appointment.
-     *
-     * @return the patient's profile
-     */
-    public Profile getPatient() {
+    public Person getPatient() {
         return patient;
     }
 
-    /**
-     * Gets the provider handling the appointment.
-     *
-     * @return the provider of the appointment
-     */
     public Provider getProvider() {
         return provider;
     }
 
-    /**
-     * Sets the timeslot of the appointment, allowing the appointment to be
-     * rescheduled.
-     *
-     * @param timeslot the new timeslot for the appointment
-     */
     public void setTimeSlot(Timeslot timeslot) {
         this.timeslot = timeslot;
     }
 
-    /**
-     * Sets the provider of the appointment, allowing the provider to be updated if
-     * necessary.
-     *
-     * @param provider the new provider for the appointment
-     */
     public void setProvider(Provider provider) {
         this.provider = provider;
     }

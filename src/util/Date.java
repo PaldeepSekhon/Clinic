@@ -1,4 +1,4 @@
-package ruclinic;
+package util;
 
 /**
  * Represents a date with year, month, and day fields.
