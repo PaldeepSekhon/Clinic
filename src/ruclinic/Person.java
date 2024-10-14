@@ -1,5 +1,7 @@
 package ruclinic;
 
+import util.Date;
+
 /**
  * The Person class is the superclass of the Patient and Provider classes.
  * It contains common attributes such as profile information.
@@ -17,6 +19,42 @@ public class Person implements Comparable<Person> {
      */
     public Person(Profile profile) {
         this.profile = profile;
+    }
+
+    /**
+     * Returns the full name of the provider, combining first and last name.
+     * 
+     * @return A string containing the provider's full name.
+     */
+    public String getName() {
+        return getFirstName() + " " + getLastName(); // Delegates to Profile through Person
+    }
+
+    /**
+     * Gets the first name from the profile.
+     * 
+     * @return The first name of the person.
+     */
+    public String getFirstName() {
+        return profile.getFirstName(); // Assuming Profile has this method
+    }
+
+    /**
+     * Gets the last name from the profile.
+     * 
+     * @return The last name of the person.
+     */
+    public String getLastName() {
+        return profile.getLastName(); // Assuming Profile has this method
+    }
+
+    /**
+     * Gets the date of birth from the profile.
+     * 
+     * @return The date of birth of the person.
+     */
+    public Date getDob() {
+        return profile.getDob(); // Assuming Profile has this method and uses a Date type
     }
 
     /**

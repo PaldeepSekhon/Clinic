@@ -25,7 +25,8 @@ public class Appointment implements Comparable<Appointment> {
      * @param date     the date of the appointment
      * @param timeslot the timeslot of the appointment
      * @param patient  the patient's profile for the appointment
-     * @param provider the provider handling the appointment (either Doctor or Technician)
+     * @param provider the provider handling the appointment (either Doctor or
+     *                 Technician)
      */
     public Appointment(Date date, Timeslot timeslot, Person patient, Provider provider) {
         this.date = date;
@@ -91,6 +92,14 @@ public class Appointment implements Comparable<Appointment> {
      */
     @Override
     public String toString() {
+        String specialtyInfo = "N/A"; // Default value if provider is not a Doctor
+
+        // Check if the provider is a Doctor and get the specialty if so
+        if (this.provider instanceof Doctor) {
+            Doctor doctor = (Doctor) this.provider; // Cast to Doctor
+            specialtyInfo = doctor.getSpecialty().getNameOnly(); // Get the name of the specialty
+        }
+
         return String.format("%s %s %s %s %s [%s, %s, %s %s, %s]",
                 this.date, // Appointment date
                 this.timeslot, // Timeslot
@@ -101,7 +110,7 @@ public class Appointment implements Comparable<Appointment> {
                 this.provider.getLocation().getCity(), // Provider's location city
                 this.provider.getLocation().getCounty(), // Provider's location county
                 this.provider.getLocation().getZip(), // Provider's location ZIP code
-                this.provider.getSpecialty().getNameOnly() // Provider's specialty (without price)
+                specialtyInfo // Provider's specialty (or "N/A" if not a Doctor)
         );
     }
 

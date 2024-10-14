@@ -1,5 +1,7 @@
 package ruclinic;
 
+import util.Date;
+
 /**
  * The Patient class represents a patient in the clinic, containing a profile
  * and a linked list of completed visits.
@@ -19,6 +21,37 @@ public class Patient extends Person {
     public Patient(Profile profile) {
         super(profile); // Call to Person constructor
         this.visits = null;
+    }
+
+    // Add methods to retrieve patient details (first name, last name, date of
+    // birth) from profile
+
+    /**
+     * Gets the patient's first name from their profile.
+     * 
+     * @return The first name of the patient.
+     */
+    public String getFirstName() {
+        return profile.getFirstName(); // Assuming Profile class has getFirstName()
+    }
+
+    /**
+     * Gets the patient's last name from their profile.
+     * 
+     * @return The last name of the patient.
+     */
+    public String getLastName() {
+        return profile.getLastName(); // Assuming Profile class has getLastName()
+    }
+
+    /**
+     * Gets the patient's date of birth from their profile.
+     * 
+     * @return The date of birth of the patient.
+     */
+    @Override
+    public Date getDob() {
+        return profile.getDob(); // Assuming Profile class has getDob() (returns Date)
     }
 
     /**
@@ -69,26 +102,34 @@ public class Patient extends Person {
     }
 
     /**
-     * Gets the total charge for all visits based on the provider's specialty charge.
+     * Gets the total charge for all visits based on the provider's specialty or
+     * rate.
+     * It handles both doctors (using specialty charge) and technicians (using rate
+     * per visit).
      * 
      * @return The total charge for the patient's visits.
      */
     public int charge() {
         int totalCharge = 0;
         Visit currentVisit = visits;
-    
+
         while (currentVisit != null) {
             Provider provider = currentVisit.getAppointment().getProvider();
-    
+
             // Check if the provider is a Doctor
             if (provider instanceof Doctor) {
                 Doctor doctor = (Doctor) provider; // Cast to Doctor to access getSpecialty()
                 totalCharge += doctor.getSpecialty().getCharge(); // Get the charge from the doctor's specialty
             }
-    
-            currentVisit = currentVisit.getNext();
+            // Handle Technician case
+            else if (provider instanceof Technician) {
+                Technician technician = (Technician) provider; // Cast to Technician to access getRatePerVisit()
+                totalCharge += technician.getRatePerVisit(); // Add the rate per visit for the technician
+            }
+
+            currentVisit = currentVisit.getNext(); // Move to the next visit in the list
         }
-    
+
         return totalCharge;
     }
 
@@ -104,12 +145,21 @@ public class Patient extends Person {
 
     // Getter and Setter for visits
 
+    /**
+     * Gets the list of visits for the patient.
+     * 
+     * @return The head of the linked list of visits.
+     */
     public Visit getVisits() {
         return visits;
     }
 
+    /**
+     * Sets the linked list of visits for the patient.
+     * 
+     * @param visits The linked list of visits to set.
+     */
     public void setVisits(Visit visits) {
         this.visits = visits;
     }
 }
-

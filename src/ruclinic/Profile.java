@@ -1,9 +1,11 @@
 package ruclinic;
+
 import util.Date;
 
 /**
  * Class representing a profile with first name, last name, and date of birth.
- * Implements Comparable to allow comparison between profiles based on last name, first name, and date of birth.
+ * Implements Comparable to allow comparison between profiles based on last
+ * name, first name, and date of birth.
  * 
  * @author Paldeep Sekhon
  * @author Aditya Ponni
@@ -26,8 +28,9 @@ public class Profile implements Comparable<Profile> {
         this.dob = dob;
     }
 
-     /**
-     * Overrides the equals() method to check if two profiles are equal based on first name, last name, and date of birth.
+    /**
+     * Overrides the equals() method to check if two profiles are equal based on
+     * first name, last name, and date of birth.
      * 
      * @param obj The object to compare with.
      * @return true if the profiles are equal, false otherwise.
@@ -46,13 +49,15 @@ public class Profile implements Comparable<Profile> {
                 dob.equals(profile.dob);
     }
 
-     /**
-    * Implements the compareTo() method for comparing two profiles.
-    * Comparison is done based on last name, then first name, and then date of birth.
-    * 
-    * @param other The profile to compare with.
-    * @return A negative number if this profile is less, zero if equal, or a positive number if greater.
-    */
+    /**
+     * Implements the compareTo() method for comparing two profiles.
+     * Comparison is done based on last name, then first name, and then date of
+     * birth.
+     * 
+     * @param other The profile to compare with.
+     * @return A negative number if this profile is less, zero if equal, or a
+     *         positive number if greater.
+     */
     @Override
     public int compareTo(Profile other) {
         int lastNameComparison = this.lname.compareTo(other.lname);
@@ -69,7 +74,8 @@ public class Profile implements Comparable<Profile> {
     }
 
     /**
-     * Overrides the toString() method to provide a formatted string representation of the profile.
+     * Overrides the toString() method to provide a formatted string representation
+     * of the profile.
      * 
      * @return A string in the format "FirstName LastName DateOfBirth".
      */
@@ -77,25 +83,27 @@ public class Profile implements Comparable<Profile> {
     public String toString() {
         return String.format("%s %s %s", fname, lname, dob);
     }
-     
-     /**
+
+    /**
      * Getter method for first name
      * 
      * @return A string first name.
      */
-    public String getFname() {
+    public String getFirstName() {
         return fname;
     }
+
     /**
      * Getter method for last name
      * 
      * @return A string last name.
      */
-    public String getLname() {
+    public String getLastName() {
         return lname;
     }
+
     /**
-     * Getter method for date of birth 
+     * Getter method for date of birth
      * 
      * @return A date date of birth.
      */
@@ -103,9 +111,10 @@ public class Profile implements Comparable<Profile> {
         return dob;
     }
 
-     /**
+    /**
      * Main method for testing the Profile class functionality.
-     * It runs several test cases to check the behavior of compareTo(), equals(), and toString() methods.
+     * It runs several test cases to check the behavior of compareTo(), equals(),
+     * and toString() methods.
      * 
      * @param args Command line arguments (not used here).
      */

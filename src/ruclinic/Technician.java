@@ -11,7 +11,8 @@ public class Technician extends Provider {
     private int ratePerVisit; // The technician's charging rate per visit
 
     /**
-     * Constructs a Technician with a specified profile, location, and rate per visit.
+     * Constructs a Technician with a specified profile, location, and rate per
+     * visit.
      * 
      * @param profile      The profile of the technician (inherited from Person).
      * @param location     The location where the technician works.
@@ -43,15 +44,15 @@ public class Technician extends Provider {
     }
 
     /**
-     * Returns a string representation of the technician, including profile, location, and rate per visit.
+     * Returns a string representation of the technician, including profile,
+     * location, and rate per visit.
      * 
      * @return A string containing the technician's details.
      */
     @Override
     public String toString() {
-        return String.format("%s, Rate per Visit: $%d", 
-            super.toString(), // Call to Provider's toString() for profile and location info
-            ratePerVisit);
+        return String.format("%s [Rate per Visit: $%d]",
+                super.toString(),
+                ratePerVisit); // Include the rate in the string representation
     }
 }
-

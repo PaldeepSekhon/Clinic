@@ -1,7 +1,8 @@
 package ruclinic;
 
 /**
- * The Doctor class represents a doctor in the clinic. It extends the Provider class 
+ * The Doctor class represents a doctor in the clinic. It extends the Provider
+ * class
  * and includes a specialty and NPI (National Provider Identification).
  * 
  * @author Paldeep Sekhon
@@ -55,16 +56,16 @@ public class Doctor extends Provider {
     }
 
     /**
-     * Returns a string representation of the doctor, including profile, location, specialty, and NPI.
+     * Returns a string representation of the doctor, including profile, location,
+     * specialty, and NPI.
      * 
      * @return A string containing the doctor's details.
      */
     @Override
     public String toString() {
-        return String.format("%s, Specialty: %s, NPI: %s", 
-            super.toString(), // Call to Provider's toString() for profile and location info
-            specialty.getNameOnly(), // Assuming Specialty has getNameOnly()
-            npi);
+        return String.format("%s [%s, NPI: %s]",
+                super.toString(),
+                specialty.getNameOnly(),
+                npi);
     }
 }
-
