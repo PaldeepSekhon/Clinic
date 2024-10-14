@@ -217,134 +217,137 @@ public class ClinicManager {
                 return;
             }
 
-            String date = tokens[1];
-            String timeslot = tokens[2];
+            String dateStr = tokens[1];
+            String timeslotStr = tokens[2];
             String firstName = tokens[3];
             String lastName = tokens[4];
-            String dob = tokens[5];
+            String dobStr = tokens[5];
             String npi = tokens[6];
 
-            String[] dateParts = date.split("/");
-            Date appointmentDate = new Date(Integer.parseInt(dateParts[2]), Integer.parseInt(dateParts[0]),
-                    Integer.parseInt(dateParts[1]));
+            // Parse the appointment date
+            String[] dateParts = dateStr.split("/");
+            Date appointmentDate = new Date(
+                    Integer.parseInt(dateParts[2]), // year
+                    Integer.parseInt(dateParts[0]), // month
+                    Integer.parseInt(dateParts[1]) // day
+            );
 
             // Validate appointment date
             if (!appointmentDate.isValid()) {
-                System.out
-                        .println("Appointment date: " + appointmentDate.toString() + " is not a valid calendar date.");
+                System.out.println("Appointment date: " + appointmentDate + " is not a valid calendar date.");
                 return;
             }
 
             // Check if the appointment is today or before today
-            Calendar appointmentCal = Calendar.getInstance();
-            appointmentCal.set(appointmentDate.getYear(), appointmentDate.getMonth() - 1, appointmentDate.getDay());
-            Calendar today = Calendar.getInstance();
-            if (appointmentCal.compareTo(today) <= 0) {
-                System.out.println(
-                        "Appointment date: " + appointmentDate.toString() + " is today or a date before today.");
+            Date today = new Date(Calendar.getInstance().get(Calendar.YEAR),
+                    Calendar.getInstance().get(Calendar.MONTH) + 1,
+                    Calendar.getInstance().get(Calendar.DAY_OF_MONTH));
+            if (appointmentDate.compareTo(today) <= 0) {
+                System.out.println("Appointment date: " + appointmentDate + " is today or a date before today.");
                 return;
             }
 
+            // Check if the appointment is on a weekend
             if (appointmentDate.isWeekend()) {
-                System.out.println("Appointment date: " + appointmentDate.toString() + " is Saturday or Sunday.");
+                System.out.println("Appointment date: " + appointmentDate + " is Saturday or Sunday.");
                 return;
             }
 
             // Check if the appointment is within six months
             if (!appointmentDate.isWithinSixMonths()) {
-                System.out.println("Appointment date: " + appointmentDate.toString() + " is not within six months.");
+                System.out.println("Appointment date: " + appointmentDate + " is not within six months.");
                 return;
             }
 
             // Validate timeslot
-            if (!isValidTimeslot(timeslot)) {
-                System.out.println(timeslot + " is not a valid time slot.");
+            Timeslot appointmentTimeslot = Timeslot.fromString(timeslotStr);
+            if (appointmentTimeslot == null) {
+                System.out.println(timeslotStr + " is not a valid time slot.");
                 return;
             }
 
-            // Validate patient's date of birth
-            String[] dobParts = dob.split("/");
-            int dobMonth = Integer.parseInt(dobParts[0]);
-            int dobDay = Integer.parseInt(dobParts[1]);
-            int dobYear = Integer.parseInt(dobParts[2]);
-            Date dobDate = new Date(dobYear, dobMonth, dobDay); // Create Date object for DOB
-
-            // Validate patient's date of birth
-            String dobValidationResult = isValidDateOfBirth(dobDate);
-            if (dobValidationResult != null) {
-                System.out.println(dobValidationResult);
+            // Parse and validate patient's date of birth
+            String[] dobParts = dobStr.split("/");
+            Date dobDate = new Date(
+                    Integer.parseInt(dobParts[2]), // year
+                    Integer.parseInt(dobParts[0]), // month
+                    Integer.parseInt(dobParts[1]) // day
+            );
+            if (!dobDate.isValid()) {
+                System.out.println("Patient dob: " + dobDate + " is not a valid calendar date.");
+                return;
+            }
+            if (dobDate.compareTo(today) >= 0) {
+                System.out.println("Patient dob: " + dobDate + " is today or a day after today.");
                 return;
             }
 
-            // Validate NPI
-            if (!isValidNPI(npi)) {
-                System.out.println(npi + " -provider doesn't exist.");
-                return;
-            }
-
-            // Check if provider with NPI exists
+            // Validate NPI and find provider
             Provider provider = findProviderByNPI(npi);
             if (provider == null) {
                 System.out.println(npi + " - provider doesn't exist.");
                 return;
             }
 
-            // Check if provider is available at the specified timeslot
-            if (!isProviderAvailable(provider, appointmentDate, timeslot)) {
-                System.out.println(provider.getProfile().getFirstName() + " " + provider.getProfile().getLastName() +
-                        " is not available at slot " + timeslot + ".");
-                return;
-            }
+            // Create patient object
+            Profile profile = new Profile(firstName, lastName, dobDate);
+            Person patient = new Person(profile);
 
-            // Check if an appointment exists for the patient at the same time
+            // Check for existing appointment for the same patient at the same date and
+            // timeslot
             for (Appointment appt : appointments) {
-                if (appt.getPatient().getFirstName().equalsIgnoreCase(firstName)
-                        && appt.getPatient().getLastName().equalsIgnoreCase(lastName)
-                        && appt.getDate().equals(appointmentDate) // Compare Date objects
-                        && appt.getTimeslot().equals(timeslot)) {
-                    System.out.println(
-                            firstName + " " + lastName + " has an existing appointment at the same time slot.");
+                if (appt.getPatient().getProfile().equals(profile) &&
+                        appt.getDate().equals(appointmentDate) &&
+                        appt.getTimeslot().equals(appointmentTimeslot)) {
+                    System.out.println(firstName + " " + lastName + " " + dobStr
+                            + " has an existing appointment at the same time slot.");
                     return;
                 }
             }
 
-            // Create the new Appointment object if all validations pass
-            Profile profile = new Profile(firstName, lastName, dobDate); // Create the Profile object
-            Patient patient = new Patient(profile); // Create the Patient object
-            Appointment newAppointment = new Appointment(appointmentDate, new Timeslot(Integer.parseInt(timeslot), 0),
-                    patient, provider);
-            appointments.add(newAppointment);
-            String formattedTime = (Integer.parseInt(timeslot) > 12) ? (Integer.parseInt(timeslot) - 12) + ":00 PM"
-                    : (Integer.parseInt(timeslot) == 12) ? "12:00 PM" : Integer.parseInt(timeslot) + ":00 AM";
+            // Check if the provider is available at the specified timeslot
+            if (!isProviderAvailable(provider, appointmentDate, appointmentTimeslot)) {
+                Doctor doctor = (Doctor) provider;
+                System.out.println(String.format("[%s %s %s, %s, %s %s][%s, #%s] is not available at slot %s.",
+                        doctor.getProfile().getFirstName(),
+                        doctor.getProfile().getLastName(),
+                        doctor.getProfile().getDob(),
+                        doctor.getLocation().getCity(),
+                        doctor.getLocation().getCounty(),
+                        doctor.getLocation().getZip(),
+                        doctor.getSpecialty().getNameOnly(),
+                        doctor.getNpi(),
+                        timeslotStr));
+                return;
+            }
 
-            String formattedDate = appointmentDate.getMonth() + "/" + appointmentDate.getDay() + "/"
-                    + appointmentDate.getYear();
-            System.out.printf("%s %s %s %s [%s, %s, %s %s][%s, #%s] booked.%n",
-                    appointmentDate.toString(),
-                    formattedDate,
+            // Create the new Appointment object
+            Appointment newAppointment = new Appointment(appointmentDate, appointmentTimeslot, patient, provider);
+            appointments.add(newAppointment);
+
+            // Print the appointment details
+            Doctor doctor = (Doctor) provider;
+            System.out.printf("%s %s %s %s %s [%s %s %s, %s, %s %s][%s, #%s] booked.%n",
+                    appointmentDate,
+                    appointmentTimeslot,
                     firstName,
                     lastName,
-                    provider.getProfile().getFirstName(),
-                    provider.getLocation().getCity(),
-                    provider.getLocation().getCounty(),
-                    provider.getLocation().getZip(),
-                    ((Doctor) provider).getSpecialty().getNameOnly(),
-                    ((Doctor) provider).getNpi());
+                    dobStr,
+                    doctor.getProfile().getFirstName(),
+                    doctor.getProfile().getLastName(),
+                    doctor.getProfile().getDob(),
+                    doctor.getLocation().getCity(),
+                    doctor.getLocation().getCounty(),
+                    doctor.getLocation().getZip(),
+                    doctor.getSpecialty().getNameOnly(),
+                    doctor.getNpi());
 
         } catch (Exception e) {
             System.out.println("Error processing the office appointment: " + e.getMessage());
         }
     }
 
-    /**
-     * Checks if the provider is available at the specified date and timeslot.
-     *
-     * @param provider the provider to check
-     * @param date     the date of the appointment
-     * @param timeslot the timeslot of the appointment
-     * @return true if the provider is available, false otherwise
-     */
-    private boolean isProviderAvailable(Provider provider, Date date, String timeslot) {
+    private boolean isProviderAvailable(Provider provider, Date date, Timeslot timeslot) {
         for (Appointment appointment : appointments) {
             if (appointment.getProvider().equals(provider) &&
                     appointment.getDate().equals(date) &&
