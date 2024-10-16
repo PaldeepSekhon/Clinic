@@ -31,7 +31,7 @@ import util.Timeslot;
 public class ClinicManager {
     private util.List<Appointment> appointments; // List to hold all appointments
     private util.List<Provider> providers; // Single list for all providers
-    private CircularLinkedList technicianList; 
+    private CircularLinkedList technicianList;
 
     // Constructor
     public ClinicManager() {
@@ -40,8 +40,9 @@ public class ClinicManager {
         this.technicianList = new CircularLinkedList();
 
         loadProviders(); // Load providers from file on startup
-       // technicianList = new List<>(); // Initialize the technician list
-        //initializeTechnicians(); // Add technicians when the clinic manager is created
+        // technicianList = new List<>(); // Initialize the technician list
+        // initializeTechnicians(); // Add technicians when the clinic manager is
+        // created
     }
 
     /**
@@ -94,16 +95,14 @@ public class ClinicManager {
                     int year = Integer.parseInt(dobParts[2]);
 
                     Profile profile = new Profile(firstName, lastName, new Date(year, month, day));
-                    Technician technician = new Technician(profile, location, ratePerVisit); // Create Technician instance
+                    Technician technician = new Technician(profile, location, ratePerVisit); // Create Technician
+                                                                                             // instance
                     providers.add(technician); // Add to the list of providers
                     technicianList.addTechnician(technician);
                 }
             }
 
             scanner.close();
-            System.out.println("Providers loaded to the list.");
-            System.out.println("Test");
-            technicianList.printTechnicianList(); 
 
         } catch (FileNotFoundException e) {
             System.out.println("Error: providers.txt not found.");
@@ -121,11 +120,11 @@ public class ClinicManager {
      */
     public void run() {
         Scanner scanner = new Scanner(System.in);
+        System.out.println("Providers loaded to the list.");
         listProviders(); // Display providers at startup
-        displayTechnicianRotation();
-        System.out.println("Clinic Manager is running...");
-        System.out.println();
-        System.out.println();
+        System.out.println("Rotation list for the technicians.");
+        technicianList.printTechnicianList();
+        System.out.printf("%nClinic Manager is running...%n%n%n");
 
         boolean running = true;
         while (running) {
@@ -219,7 +218,7 @@ public class ClinicManager {
     // Command Handlers
 
     private void processOfficeAppointment(String command) {
-       
+
         try {
             String[] tokens = command.split(",");
             if (tokens.length < 7) {
@@ -385,28 +384,28 @@ public class ClinicManager {
                 System.out.println("Missing data tokens.");
                 return;
             }
-    
+
             String date = tokens[1];
             String timeslot = tokens[2];
             String firstName = tokens[3];
             String lastName = tokens[4];
             String dob = tokens[5];
             String imagingService = tokens[6];
-    
+
             // Parse the appointment date into a Date object
             String[] dateParts = date.split("/");
             int month = Integer.parseInt(dateParts[0]);
             int day = Integer.parseInt(dateParts[1]);
             int year = Integer.parseInt(dateParts[2]);
             Date appointmentDate = new Date(year, month, day); // Create Date object for appointment date
-    
+
             // Validate appointment date using the isValid method
             if (!appointmentDate.isValid()) {
                 System.out
                         .println("Appointment date: " + appointmentDate.toString() + " is not a valid calendar date.");
                 return;
             }
-    
+
             // Check if the date is today or before today
             Calendar appointmentCal = Calendar.getInstance();
             appointmentCal.set(year, month - 1, day); // Month is 0-based in Calendar
@@ -416,82 +415,95 @@ public class ClinicManager {
                         "Appointment date: " + appointmentDate.toString() + " is today or a date before today.");
                 return;
             }
-    
+
             // Check if it's a weekend
             int dayOfWeek = appointmentCal.get(Calendar.DAY_OF_WEEK);
             if (dayOfWeek == Calendar.SATURDAY || dayOfWeek == Calendar.SUNDAY) {
                 System.out.println("Appointment date: " + appointmentDate.toString() + " is Saturday or Sunday.");
                 return;
             }
-    
+
+            // Check if the appointment is within six months
+            if (!appointmentDate.isWithinSixMonths()) {
+                System.out.println("Appointment date: " + appointmentDate + " is not within six months.");
+                return;
+            }
+
             // Validate timeslot
             Timeslot timeslotObj = Timeslot.fromString(timeslot); // Use fromString() to convert timeslot
             if (timeslotObj == null) {
                 System.out.println(timeslot + " is not a valid time slot.");
                 return;
             }
-    
+
             // Validate imaging service
             if (!isValidImagingService(imagingService)) {
                 System.out.println(imagingService + " - imaging service not provided.");
                 return;
             }
-            
-          
-    
-           // Debug: Print both timeslot objects for comparison
-for (Appointment appt : appointments) {
-   
 
-    if (appt.getPatient().getFirstName().equalsIgnoreCase(firstName)
-            && appt.getPatient().getLastName().equalsIgnoreCase(lastName)
-            && appt.getDate().equals(appointmentDate)
-            && appt.getTimeslot().equals(timeslotObj)) {
-        System.out.println(firstName + " " + lastName + " has an existing appointment at the same time slot.");
-        return;
-    }
-}
-    
+            // Debug: Print both timeslot objects for comparison
+            for (Appointment appt : appointments) {
+
+                if (appt.getPatient().getFirstName().equalsIgnoreCase(firstName)
+                        && appt.getPatient().getLastName().equalsIgnoreCase(lastName)
+                        && appt.getDate().equals(appointmentDate)
+                        && appt.getTimeslot().equals(timeslotObj)) {
+                    System.out.println(
+                            firstName + " " + lastName + " has an existing appointment at the same time slot.");
+                    return;
+                }
+            }
+
             // Assign the next available technician from the providers list
             Technician technician = assignTechnician();
             if (technician == null) {
                 System.out.println("Cannot find an available technician.");
                 return;
             }
-    
+
             // Parse the date of birth
             String[] dobParts = dob.split("/");
             int dobMonth = Integer.parseInt(dobParts[0]);
             int dobDay = Integer.parseInt(dobParts[1]);
             int dobYear = Integer.parseInt(dobParts[2]);
             Date dobDate = new Date(dobYear, dobMonth, dobDay); // Create Date object for DOB
-    
+
             // Validate patient's date of birth
             String dobValidationResult = isValidDateOfBirth(dobDate);
             if (dobValidationResult != null) {
                 System.out.println(dobValidationResult);
                 return;
             }
-    
+
             Profile profile = new Profile(firstName, lastName, dobDate); // Construct the Profile object
             Patient patient = new Patient(profile); // Create a Patient object
-    
+
             // Create the Imaging appointment using timeslotObj to avoid inconsistency
             Radiology room = Radiology.valueOf(imagingService.toUpperCase());
             Imaging imagingAppointment = new Imaging(appointmentDate, timeslotObj, patient, technician, room);
             appointments.add(imagingAppointment); // Add the new appointment to the list
-           
-           
-           
-           
-            System.out.println(date + " " + timeslot + ":00 " + firstName + " " + lastName + " [" + technician.getName()
-                    + "] booked.");
-    
+
+            // Print the appointment details
+            System.out.printf("%s %s %s %s [%s][%s, %s %s][rate: $%.2f][%s] booked.%n",
+                    date, // Appointment date
+                    timeslot, // Appointment time
+                    firstName, // Patient's first name
+                    lastName, // Patient's last name
+                    technician.getProfile().getFirstName() + " " + technician.getProfile().getLastName(), // Technician's
+                                                                                                          // name
+                    technician.getLocation().getCity(), // Technician's city
+                    technician.getLocation().getCounty(), // Technician's county
+                    technician.getLocation().getZip(), // Technician's zip code
+                    (double) technician.rate(), // Technician's rate formatted to double
+                    imagingService // Imaging service name
+            );
+
         } catch (Exception e) {
             System.out.println("Error processing the imaging appointment: " + e.getMessage());
         }
     }
-    
+
     private String isValidDateOfBirth(Date dob) {
         // Check if the date is valid
         if (!dob.isValid()) {
@@ -607,9 +619,8 @@ for (Appointment appt : appointments) {
                         doctor.getNpi());
             } else if (provider instanceof Technician) {
                 Technician technician = (Technician) provider;
-                // Display technician's rate per visit, using the testing methods
-                providerDetails += String.format("[rate: $%s]",
-                        technician.rate()); // Assuming getRate() method returns the rate as a string
+                // Display technician's rate per visit formatted to two decimal places
+                providerDetails += String.format("[rate: $%.2f]", (double) technician.rate());
             }
 
             System.out.println(providerDetails);
@@ -622,45 +633,47 @@ for (Appointment appt : appointments) {
     private void displayTechnicianRotation() {
         System.out.println("Rotation list for the technicians.");
 
-    if (technicianList.size() == 0) {
-        System.out.println("No technicians available.");
-        return;
-    }
+        if (technicianList.size() == 0) {
+            System.out.println("No technicians available.");
+            return;
+        }
 
-    // Get the first technician from the list
-    Technician firstTechnician = technicianList.getFirstTechnician(); // Start with the first technician (head)
-    Technician currentTechnician = firstTechnician;
+        // Get the first technician from the list
+        Technician firstTechnician = technicianList.getFirstTechnician(); // Start with the first technician (head)
+        Technician currentTechnician = firstTechnician;
 
-    // Debug: Ensure we have the correct first technician
-    System.out.println("First Technician: " + firstTechnician.getProfile().getFirstName() + " " + firstTechnician.getProfile().getLastName());
+        // Debug: Ensure we have the correct first technician
+        System.out.println("First Technician: " + firstTechnician.getProfile().getFirstName() + " "
+                + firstTechnician.getProfile().getLastName());
 
-    // StringBuilder to accumulate the output
-    StringBuilder rotationList = new StringBuilder();
+        // StringBuilder to accumulate the output
+        StringBuilder rotationList = new StringBuilder();
 
-    // Traverse the circular list
-    do {
-        // Append the technician details to the rotation list
-        rotationList.append(String.format("%s (%s)",
-                currentTechnician.getProfile().getFirstName() + " " + currentTechnician.getProfile().getLastName(),
-                currentTechnician.getLocation().getCity()));
-        rotationList.append(" --> ");
+        // Traverse the circular list
+        do {
+            // Append the technician details to the rotation list
+            rotationList.append(String.format("%s (%s)",
+                    currentTechnician.getProfile().getFirstName() + " " + currentTechnician.getProfile().getLastName(),
+                    currentTechnician.getLocation().getCity()));
+            rotationList.append(" --> ");
 
-        // Debug: Print each technician as we visit them
-        System.out.println("Visiting: " + currentTechnician.getProfile().getFirstName() + " " + currentTechnician.getProfile().getLastName());
+            // Debug: Print each technician as we visit them
+            System.out.println("Visiting: " + currentTechnician.getProfile().getFirstName() + " "
+                    + currentTechnician.getProfile().getLastName());
 
-        // Get the next technician in the rotation
-        currentTechnician = technicianList.getNextTechnician();
+            // Get the next technician in the rotation
+            currentTechnician = technicianList.getNextTechnician();
 
-    } while (currentTechnician != firstTechnician); // Continue until we loop back to the first technician
+        } while (currentTechnician != firstTechnician); // Continue until we loop back to the first technician
 
-    // Remove the last arrow
-    if (rotationList.length() > 0) {
-        rotationList.setLength(rotationList.length() - 5); // Remove last " --> "
-    }
+        // Remove the last arrow
+        if (rotationList.length() > 0) {
+            rotationList.setLength(rotationList.length() - 5); // Remove last " --> "
+        }
 
-    // Print the final rotation list
-    System.out.println(rotationList.toString());
-    System.out.println();
+        // Print the final rotation list
+        System.out.println(rotationList.toString());
+        System.out.println();
     }
 
     private void listOfficeAppointments() {
@@ -769,38 +782,41 @@ for (Appointment appt : appointments) {
         return null; // No technician available
     }
 
-     // Method to initialize and add technicians
-    /*  private void initializeTechnicians() {
-        // Create radiology services for each technician
-       Date dobJenny = new Date(1991, 8, 9);
-       Date dobFrank = new Date(1999, 6, 24);
-       Date dobBen = new Date(1987, 9, 28);
-
-
-        List<Radiology> jennyServices = new List<>();
-        jennyServices.add(Radiology.XRAY);
-        jennyServices.add(Radiology.ULTRASOUND);
-
-        List<Radiology> frankServices = new List<>();
-        frankServices.add(Radiology.XRAY);
-        frankServices.add(Radiology.CATSCAN);
-
-        List<Radiology> benServices = new List<>();
-        benServices.add(Radiology.ULTRASOUND);
-
-        // Create Technician objects
-        Technician jennyPatel = new Technician(new Profile("Jenny", "Patel",dobJenny), 
-                                               Location.BRIDGEWATER, 125, jennyServices);
-
-        Technician frankLin = new Technician(new Profile("Frank", "Lin",dobFrank), 
-                                              Location.PISCATAWAY, 120, frankServices);
-
-        Technician benJerry = new Technician(new Profile("Ben", "Jerry", dobBen), 
-                                              Location.PISCATAWAY, 150, benServices);
-
-        // Add the technicians to the technician list
-        technicianList.add(jennyPatel);
-        technicianList.add(frankLin);
-        technicianList.add(benJerry);
-    }*/
+    // Method to initialize and add technicians
+    /*
+     * private void initializeTechnicians() {
+     * // Create radiology services for each technician
+     * Date dobJenny = new Date(1991, 8, 9);
+     * Date dobFrank = new Date(1999, 6, 24);
+     * Date dobBen = new Date(1987, 9, 28);
+     * 
+     * 
+     * List<Radiology> jennyServices = new List<>();
+     * jennyServices.add(Radiology.XRAY);
+     * jennyServices.add(Radiology.ULTRASOUND);
+     * 
+     * List<Radiology> frankServices = new List<>();
+     * frankServices.add(Radiology.XRAY);
+     * frankServices.add(Radiology.CATSCAN);
+     * 
+     * List<Radiology> benServices = new List<>();
+     * benServices.add(Radiology.ULTRASOUND);
+     * 
+     * // Create Technician objects
+     * Technician jennyPatel = new Technician(new Profile("Jenny",
+     * "Patel",dobJenny),
+     * Location.BRIDGEWATER, 125, jennyServices);
+     * 
+     * Technician frankLin = new Technician(new Profile("Frank", "Lin",dobFrank),
+     * Location.PISCATAWAY, 120, frankServices);
+     * 
+     * Technician benJerry = new Technician(new Profile("Ben", "Jerry", dobBen),
+     * Location.PISCATAWAY, 150, benServices);
+     * 
+     * // Add the technicians to the technician list
+     * technicianList.add(jennyPatel);
+     * technicianList.add(frankLin);
+     * technicianList.add(benJerry);
+     * }
+     */
 }

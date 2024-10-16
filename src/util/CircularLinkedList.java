@@ -1,6 +1,6 @@
 package util;
-import ruclinic.Technician;
 
+import ruclinic.Technician;
 
 public class CircularLinkedList {
     private Node tail; // The tail of the circular linked list
@@ -14,19 +14,18 @@ public class CircularLinkedList {
         size = 0;
     }
 
-    // Add a technician to the circular linked list
+    // Add a technician to the circular linked list at the beginning
     public void addTechnician(Technician technician) {
         Node newNode = new Node(technician);
         if (tail == null) {
             tail = newNode;
             tail.next = tail; // Points to itself
         } else {
-            newNode.next = tail.next;
-            tail.next = newNode;
-            tail = newNode;
+            newNode.next = tail.next; // New node points to head
+            tail.next = newNode; // Tail points to new node
         }
         size++;
-        System.out.println("Technician added: " + technician.getProfile().getFirstName() + " " + technician.getProfile().getLastName());
+
     }
 
     // Remove a technician from the list
@@ -42,10 +41,10 @@ public class CircularLinkedList {
                     if (current == tail.next) { // Only one element
                         tail = null;
                     } else {
-                        tail = prev;
+                        tail = prev; // Update tail
                     }
                 }
-                prev.next = current.next;
+                prev.next = current.next; // Bypass the current node
                 size--;
                 return true;
             }
@@ -57,15 +56,19 @@ public class CircularLinkedList {
 
     // Get the next technician in the round-robin order
     public Technician getNextTechnician() {
+        if (tail == null) {
+            return null; // List is empty
+        }
         if (current == null) {
             current = tail.next; // Start from the head
+        } else {
+            current = current.next; // Move to the next technician
         }
-        Technician technician = current.technician;
-        current = current.next; // Move to the next technician
-        return technician;
+        return current.technician; // Return the technician at current position
     }
-      // Return to the head for traversal
-      public Technician getFirstTechnician() {
+
+    // Return to the head for traversal
+    public Technician getFirstTechnician() {
         if (tail != null) {
             return tail.next.technician; // Return the first technician (head)
         }
@@ -77,12 +80,27 @@ public class CircularLinkedList {
             System.out.println("Technician list is empty.");
             return;
         }
+
+        StringBuilder rotationList = new StringBuilder(); // To accumulate technician details
         Node current = tail.next; // Start from the head (node after the tail)
+
         do {
-            System.out.println(current.technician.getProfile().getFirstName() + " " +
-                               current.technician.getProfile().getLastName());
-            current = current.next;
+            // Append the technician's name and location to the rotation list
+            rotationList.append(String.format("%s %s (%s) --> ",
+                    current.technician.getProfile().getFirstName(),
+                    current.technician.getProfile().getLastName(),
+                    current.technician.getLocation().getCity()));
+
+            current = current.next; // Move to the next technician
         } while (current != tail.next); // Loop until back at the start
+
+        // Remove the last " --> "
+        if (rotationList.length() > 0) {
+            rotationList.setLength(rotationList.length() - 5); // Remove the last arrow
+        }
+
+        // Print the final rotation list
+        System.out.println(rotationList.toString());
     }
 
     // Check if the list is empty
