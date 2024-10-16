@@ -25,6 +25,20 @@ public class Timeslot implements Comparable<Timeslot> {
         return this.minute - other.minute;
     }
 
+         // Implementing the equals() method to compare hour and minute
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) return true; // Same reference
+        if (obj == null || getClass() != obj.getClass()) return false; // Null or different class
+        Timeslot timeslot = (Timeslot) obj; // Cast to Timeslot
+        return hour == timeslot.hour && minute == timeslot.minute; // Compare hour and minute
+    }
+     // Implementing the hashCode() method to ensure consistency when using in hash-based collections
+     @Override
+     public int hashCode() {
+         return 31 * hour + minute; // Generate unique hash based on hour and minute
+     }
+
     public static Timeslot fromString(String input) {
         // Implement conversion logic to map input string to Timeslot
         int slotNumber = Integer.parseInt(input);
