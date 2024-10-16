@@ -102,6 +102,8 @@ public class ClinicManager {
 
             scanner.close();
             System.out.println("Providers loaded to the list.");
+            System.out.println("Test");
+            technicianList.printTechnicianList(); 
 
         } catch (FileNotFoundException e) {
             System.out.println("Error: providers.txt not found.");
@@ -217,6 +219,7 @@ public class ClinicManager {
     // Command Handlers
 
     private void processOfficeAppointment(String command) {
+       
         try {
             String[] tokens = command.split(",");
             if (tokens.length < 7) {
@@ -619,28 +622,45 @@ for (Appointment appt : appointments) {
     private void displayTechnicianRotation() {
         System.out.println("Rotation list for the technicians.");
 
-        StringBuilder rotationList = new StringBuilder();
-        Sort.provider(providers);
+    if (technicianList.size() == 0) {
+        System.out.println("No technicians available.");
+        return;
+    }
 
-        for (Provider provider : providers) {
-            if (provider instanceof Technician) { // Check if the provider is a Technician
-                Technician technician = (Technician) provider;
-                rotationList.append(String.format("%s (%s)",
-                        technician.getProfile().getFirstName() + " " + technician.getProfile().getLastName(),
-                        technician.getLocation().getCity()));
+    // Get the first technician from the list
+    Technician firstTechnician = technicianList.getFirstTechnician(); // Start with the first technician (head)
+    Technician currentTechnician = firstTechnician;
 
-                rotationList.append(" --> "); // Add arrow for rotation
-            }
-        }
+    // Debug: Ensure we have the correct first technician
+    System.out.println("First Technician: " + firstTechnician.getProfile().getFirstName() + " " + firstTechnician.getProfile().getLastName());
 
-        // Remove the last arrow if there were any technicians
-        if (rotationList.length() > 0) {
-            rotationList.setLength(rotationList.length() - 5); // Remove last " --> "
-        }
+    // StringBuilder to accumulate the output
+    StringBuilder rotationList = new StringBuilder();
 
-        System.out.println(rotationList.toString());
-        System.out.println();
+    // Traverse the circular list
+    do {
+        // Append the technician details to the rotation list
+        rotationList.append(String.format("%s (%s)",
+                currentTechnician.getProfile().getFirstName() + " " + currentTechnician.getProfile().getLastName(),
+                currentTechnician.getLocation().getCity()));
+        rotationList.append(" --> ");
 
+        // Debug: Print each technician as we visit them
+        System.out.println("Visiting: " + currentTechnician.getProfile().getFirstName() + " " + currentTechnician.getProfile().getLastName());
+
+        // Get the next technician in the rotation
+        currentTechnician = technicianList.getNextTechnician();
+
+    } while (currentTechnician != firstTechnician); // Continue until we loop back to the first technician
+
+    // Remove the last arrow
+    if (rotationList.length() > 0) {
+        rotationList.setLength(rotationList.length() - 5); // Remove last " --> "
+    }
+
+    // Print the final rotation list
+    System.out.println(rotationList.toString());
+    System.out.println();
     }
 
     private void listOfficeAppointments() {

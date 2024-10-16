@@ -1,7 +1,8 @@
 util/Date.class
-ruclinic/Person.class
+util/List$1.class
 ruclinic/Location.class
-ruclinic/Doctor.class
 ruclinic/Profile.class
-ruclinic/Provider.class
 ruclinic/Specialty.class
+ruclinic/Person.class
+ruclinic/Doctor.class
+ruclinic/Provider.class

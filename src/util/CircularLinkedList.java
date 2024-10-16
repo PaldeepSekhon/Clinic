@@ -26,6 +26,7 @@ public class CircularLinkedList {
             tail = newNode;
         }
         size++;
+        System.out.println("Technician added: " + technician.getProfile().getFirstName() + " " + technician.getProfile().getLastName());
     }
 
     // Remove a technician from the list
@@ -62,6 +63,26 @@ public class CircularLinkedList {
         Technician technician = current.technician;
         current = current.next; // Move to the next technician
         return technician;
+    }
+      // Return to the head for traversal
+      public Technician getFirstTechnician() {
+        if (tail != null) {
+            return tail.next.technician; // Return the first technician (head)
+        }
+        return null; // No technicians available
+    }
+
+    public void printTechnicianList() {
+        if (tail == null) {
+            System.out.println("Technician list is empty.");
+            return;
+        }
+        Node current = tail.next; // Start from the head (node after the tail)
+        do {
+            System.out.println(current.technician.getProfile().getFirstName() + " " +
+                               current.technician.getProfile().getLastName());
+            current = current.next;
+        } while (current != tail.next); // Loop until back at the start
     }
 
     // Check if the list is empty
