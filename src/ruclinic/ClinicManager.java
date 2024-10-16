@@ -4,8 +4,9 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.Calendar;
 import java.util.Scanner;
+
+import util.CircularLinkedList;
 import util.Date;
-import util.List;
 import util.Sort;
 import util.Timeslot;
 
@@ -30,15 +31,16 @@ import util.Timeslot;
 public class ClinicManager {
     private util.List<Appointment> appointments; // List to hold all appointments
     private util.List<Provider> providers; // Single list for all providers
-    private List<Technician> technicianList; 
+    private CircularLinkedList technicianList; 
 
     // Constructor
     public ClinicManager() {
         this.appointments = new util.List<>(); // Custom List for appointments
         this.providers = new util.List<>(); // Single Custom List for all providers
+        this.technicianList = new CircularLinkedList();
 
         loadProviders(); // Load providers from file on startup
-        technicianList = new List<>(); // Initialize the technician list
+       // technicianList = new List<>(); // Initialize the technician list
         //initializeTechnicians(); // Add technicians when the clinic manager is created
     }
 
@@ -92,8 +94,9 @@ public class ClinicManager {
                     int year = Integer.parseInt(dobParts[2]);
 
                     Profile profile = new Profile(firstName, lastName, new Date(year, month, day));
-                    Provider technician = new Technician(profile, location, ratePerVisit); // Create Technician instance
+                    Technician technician = new Technician(profile, location, ratePerVisit); // Create Technician instance
                     providers.add(technician); // Add to the list of providers
+                    technicianList.addTechnician(technician);
                 }
             }
 
@@ -739,10 +742,9 @@ for (Appointment appt : appointments) {
 
     private Technician assignTechnician() {
         // Assign a technician from the providers list
-        for (Provider provider : providers) {
-            if (provider instanceof Technician) {
-                return (Technician) provider; // Return the first available technician
-            }
+        if (technicianList.size() > 0) {
+            // Get the next available technician in the round-robin order
+            return technicianList.getNextTechnician();
         }
         return null; // No technician available
     }
