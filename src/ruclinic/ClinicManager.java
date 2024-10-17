@@ -791,11 +791,13 @@ public class ClinicManager {
         }
 
         // Get the first technician and store as starting point
-        Technician firstTechnician = technicianList.getFirstTechnician();
-        if (firstTechnician == null) {
+       // Technician firstTechnician = technicianList.getFirstTechnician();
+        Technician currentTech = technicianList.getNextTechnician();  
+        if (currentTech == null) {
             return null;
         }
-
+        
+        Technician firstTechnician = currentTech;
         System.out.println("Starting technician rotation for " + imagingService + " at " + timeslotObj);
 
         // Store the first technician's ID to track full rotation
@@ -803,7 +805,7 @@ public class ClinicManager {
                 firstTechnician.getProfile().getLastName();
 
         // Important: Initialize currentTech with firstTechnician
-        Technician currentTech = firstTechnician;
+      
 
         // Keep track of whether we've done a full rotation
         boolean hasCompletedRotation = false;
