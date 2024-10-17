@@ -489,19 +489,19 @@ public class ClinicManager {
 
             // Print confirmation
             System.out.printf("%s %s %s %s %s [%s %s %s, %s, %s %s][rate: $%.2f][%s] booked.%n",
-                        appointmentDate,
-                         timeslotObj,
-                            firstName,
-                             lastName,
-                                 dobStr,
+                    appointmentDate,
+                    timeslotObj,
+                    firstName,
+                    lastName,
+                    dobStr,
                     technician.getProfile().getFirstName(),
-                     technician.getProfile().getLastName(),
-                     technician.getProfile().getDob().toString(),
-                     technician.getLocation().getCity(),
-                 technician.getLocation().getCounty(),
-                 technician.getLocation().getZip(),
-                     (double)technician.rate(),
-                     imagingService.toUpperCase());
+                    technician.getProfile().getLastName(),
+                    technician.getProfile().getDob().toString(),
+                    technician.getLocation().getCity(),
+                    technician.getLocation().getCounty(),
+                    technician.getLocation().getZip(),
+                    (double) technician.rate(),
+                    imagingService.toUpperCase());
 
         } catch (Exception e) {
             System.out.println("Error processing the imaging appointment: " + e.getMessage());
@@ -782,71 +782,87 @@ public class ClinicManager {
         return null;
     }
 
+    // The problem is in the loop termination logic. Here's the fixed version with
+    // comments explaining the issues:
+
     private Technician assignTechnicianForService(String imagingService, Date appointmentDate, Timeslot timeslotObj) {
         if (technicianList.isEmpty()) {
             return null;
         }
 
-        // Start fresh rotation
+        // Get the first technician and store as starting point
         Technician firstTechnician = technicianList.getFirstTechnician();
         if (firstTechnician == null) {
             return null;
         }
+
         System.out.println("Starting technician rotation for " + imagingService + " at " + timeslotObj);
 
-        // Track rotation using technician identifiers
+        // Store the first technician's ID to track full rotation
         String firstTechIdentifier = firstTechnician.getProfile().getFirstName() +
                 firstTechnician.getProfile().getLastName();
-        Technician currentTech;
+
+        // Important: Initialize currentTech with firstTechnician
+        Technician currentTech = firstTechnician;
+
+        // Keep track of whether we've done a full rotation
+        boolean hasCompletedRotation = false;
 
         do {
-            currentTech = technicianList.getNextTechnician();
             if (currentTech == null) {
                 break;
             }
 
-            if (!isTechnicianAvailable(currentTech, timeslotObj)) {
-                System.out.println("Technician " + currentTech.getProfile().getFirstName() + " " + currentTech.getProfile().getLastName() + " is not available at " + timeslotObj);
-                continue; // Skip this technician and move to the next one
-            }
-            System.out.println("Checking technician: " + currentTech.getProfile().getFirstName() + " " + currentTech.getProfile().getLastName());
+            System.out.println("Checking technician: " + currentTech.getProfile().getFirstName() +
+                    " " + currentTech.getProfile().getLastName());
 
-            String location = currentTech.getLocation().getCity();
-            if (technicianList.isRoomAvailable(imagingService, location, timeslotObj)) {
-                System.out.println("Assigned technician: " + currentTech.getProfile().getFirstName() + " " + currentTech.getProfile().getLastName() + " for " + imagingService);
-                bookTechnican(currentTech, timeslotObj);
-                return currentTech;
+            // Check availability
+            if (isTechnicianAvailable(currentTech, timeslotObj)) {
+                String location = currentTech.getLocation().getCity();
+                if (technicianList.isRoomAvailable(imagingService, location, timeslotObj)) {
+                    System.out.println("Assigned technician: " + currentTech.getProfile().getFirstName() +
+                            " " + currentTech.getProfile().getLastName() + " for " + imagingService);
+                    bookTechnican(currentTech, timeslotObj);
+                    return currentTech;
+                }
+            } else {
+                System.out.println("Technician " + currentTech.getProfile().getFirstName() +
+                        " " + currentTech.getProfile().getLastName() + " is not available at " + timeslotObj);
             }
-           
 
-            String currentTechIdentifier = currentTech.getProfile().getFirstName() +
-                    currentTech.getProfile().getLastName();
+            // Get next technician AFTER checking current one
+            currentTech = technicianList.getNextTechnician();
 
-            // Check if we've completed a full rotation
-            if (currentTechIdentifier.equals(firstTechIdentifier)) {
-                break;
+            // Check for rotation completion
+            if (currentTech != null) {
+                String currentTechIdentifier = currentTech.getProfile().getFirstName() +
+                        currentTech.getProfile().getLastName();
+                if (currentTechIdentifier.equals(firstTechIdentifier)) {
+                    hasCompletedRotation = true;
+                    break;
+                }
             }
-        } while (true);
+        } while (!hasCompletedRotation && currentTech != null);
 
         return null;
     }
 
-      private boolean isTechnicianAvailable(Technician technician, Timeslot timeslot) {
+    private boolean isTechnicianAvailable(Technician technician, Timeslot timeslot) {
         // Create a Pair object representing the technician's location and the timeslot
         Pair technicianSchedule = new Pair(technician.getLocation().getCity(), timeslot);
-        
+
         // Check if the technician is already booked at this timeslot
         if (technicianBookings.contains(technicianSchedule)) {
-            System.out.println("Technician " + technician.getProfile().getFirstName() + " " + technician.getProfile().getLastName() + " is already booked at " + timeslot);
+            System.out.println("Technician " + technician.getProfile().getFirstName() + " "
+                    + technician.getProfile().getLastName() + " is already booked at " + timeslot);
             return false; // Technician is booked and not available
         }
-    
+
         // Technician is available if they are not booked at this timeslot
         return true;
     }
 
-    public void bookTechnican(Technician technician, Timeslot timeslot)
-    {
+    public void bookTechnican(Technician technician, Timeslot timeslot) {
         Pair technicianSchedule = new Pair(technician.getLocation().getCity(), timeslot);
         technicianBookings.add(technicianSchedule);
     }
