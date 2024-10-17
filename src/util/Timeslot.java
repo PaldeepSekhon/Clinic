@@ -25,50 +25,57 @@ public class Timeslot implements Comparable<Timeslot> {
         return this.minute - other.minute;
     }
 
-         // Implementing the equals() method to compare hour and minute
+    // Implementing the equals() method to compare hour and minute
     @Override
     public boolean equals(Object obj) {
-        if (this == obj) return true; // Same reference
-        if (obj == null || getClass() != obj.getClass()) return false; // Null or different class
+        if (this == obj)
+            return true; // Same reference
+        if (obj == null || getClass() != obj.getClass())
+            return false; // Null or different class
         Timeslot timeslot = (Timeslot) obj; // Cast to Timeslot
         return hour == timeslot.hour && minute == timeslot.minute; // Compare hour and minute
     }
-     // Implementing the hashCode() method to ensure consistency when using in hash-based collections
-     @Override
-     public int hashCode() {
-         return 31 * hour + minute; // Generate unique hash based on hour and minute
-     }
+
+    // Implementing the hashCode() method to ensure consistency when using in
+    // hash-based collections
+    @Override
+    public int hashCode() {
+        return 31 * hour + minute; // Generate unique hash based on hour and minute
+    }
 
     public static Timeslot fromString(String input) {
-        // Implement conversion logic to map input string to Timeslot
-        int slotNumber = Integer.parseInt(input);
-        switch (slotNumber) {
-            case 1:
-                return new Timeslot(9, 0);
-            case 2:
-                return new Timeslot(9, 30);
-            case 3:
-                return new Timeslot(10, 0);
-            case 4:
-                return new Timeslot(10, 30);
-            case 5:
-                return new Timeslot(11, 0);
-            case 6:
-                return new Timeslot(11, 30);
-            case 7:
-                return new Timeslot(14, 0);
-            case 8:
-                return new Timeslot(14, 30);
-            case 9:
-                return new Timeslot(15, 0);
-            case 10:
-                return new Timeslot(15, 30);
-            case 11:
-                return new Timeslot(16, 0);
-            case 12:
-                return new Timeslot(16, 30);
-            default:
-                return null; // Invalid slot number
+        try {
+            int slotNumber = Integer.parseInt(input); // Attempt to parse the input
+            switch (slotNumber) {
+                case 1:
+                    return new Timeslot(9, 0);
+                case 2:
+                    return new Timeslot(9, 30);
+                case 3:
+                    return new Timeslot(10, 0);
+                case 4:
+                    return new Timeslot(10, 30);
+                case 5:
+                    return new Timeslot(11, 0);
+                case 6:
+                    return new Timeslot(11, 30);
+                case 7:
+                    return new Timeslot(14, 0);
+                case 8:
+                    return new Timeslot(14, 30);
+                case 9:
+                    return new Timeslot(15, 0);
+                case 10:
+                    return new Timeslot(15, 30);
+                case 11:
+                    return new Timeslot(16, 0);
+                case 12:
+                    return new Timeslot(16, 30);
+                default:
+                    return null; // Invalid slot number
+            }
+        } catch (NumberFormatException e) {
+            return null; // Return null for invalid inputs
         }
     }
 

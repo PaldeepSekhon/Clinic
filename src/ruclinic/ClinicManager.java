@@ -377,6 +377,8 @@ public class ClinicManager {
         return findProviderByNPI(npi) != null;
     }
 
+    // Here's the corrected processImagingAppointment method with proper date
+    // comparison logic:
     private void processImagingAppointment(String command) {
         try {
             String[] tokens = command.split(",");
@@ -385,41 +387,39 @@ public class ClinicManager {
                 return;
             }
 
-            String date = tokens[1];
-            String timeslot = tokens[2];
+            String dateStr = tokens[1];
+            String timeslotStr = tokens[2];
             String firstName = tokens[3];
             String lastName = tokens[4];
-            String dob = tokens[5];
+            String dobStr = tokens[5];
             String imagingService = tokens[6];
 
-            // Parse the appointment date into a Date object
-            String[] dateParts = date.split("/");
-            int month = Integer.parseInt(dateParts[0]);
-            int day = Integer.parseInt(dateParts[1]);
-            int year = Integer.parseInt(dateParts[2]);
-            Date appointmentDate = new Date(year, month, day); // Create Date object for appointment date
+            // Parse the appointment date
+            String[] dateParts = dateStr.split("/");
+            Date appointmentDate = new Date(
+                    Integer.parseInt(dateParts[2]), // year
+                    Integer.parseInt(dateParts[0]), // month
+                    Integer.parseInt(dateParts[1]) // day
+            );
 
-            // Validate appointment date using the isValid method
+            // Validate appointment date
             if (!appointmentDate.isValid()) {
-                System.out
-                        .println("Appointment date: " + appointmentDate.toString() + " is not a valid calendar date.");
+                System.out.println("Appointment date: " + appointmentDate + " is not a valid calendar date.");
                 return;
             }
 
-            // Check if the date is today or before today
-            Calendar appointmentCal = Calendar.getInstance();
-            appointmentCal.set(year, month - 1, day); // Month is 0-based in Calendar
-            Calendar today = Calendar.getInstance();
-            if (appointmentCal.compareTo(today) <= 0) {
-                System.out.println(
-                        "Appointment date: " + appointmentDate.toString() + " is today or a date before today.");
+            // Check if the appointment is today or before today
+            Date today = new Date(Calendar.getInstance().get(Calendar.YEAR),
+                    Calendar.getInstance().get(Calendar.MONTH) + 1,
+                    Calendar.getInstance().get(Calendar.DAY_OF_MONTH));
+            if (appointmentDate.compareTo(today) <= 0) {
+                System.out.println("Appointment date: " + appointmentDate + " is today or a date before today.");
                 return;
             }
 
-            // Check if it's a weekend
-            int dayOfWeek = appointmentCal.get(Calendar.DAY_OF_WEEK);
-            if (dayOfWeek == Calendar.SATURDAY || dayOfWeek == Calendar.SUNDAY) {
-                System.out.println("Appointment date: " + appointmentDate.toString() + " is Saturday or Sunday.");
+            // Check if the appointment is on a weekend
+            if (appointmentDate.isWeekend()) {
+                System.out.println("Appointment date: " + appointmentDate + " is Saturday or Sunday.");
                 return;
             }
 
@@ -430,9 +430,9 @@ public class ClinicManager {
             }
 
             // Validate timeslot
-            Timeslot timeslotObj = Timeslot.fromString(timeslot); // Use fromString() to convert timeslot
+            Timeslot timeslotObj = Timeslot.fromString(timeslotStr);
             if (timeslotObj == null) {
-                System.out.println(timeslot + " is not a valid time slot.");
+                System.out.println(timeslotStr + " is not a valid time slot.");
                 return;
             }
 
@@ -442,62 +442,61 @@ public class ClinicManager {
                 return;
             }
 
-            // Debug: Print both timeslot objects for comparison
-            for (Appointment appt : appointments) {
+            // Parse and validate patient's DOB
+            String[] dobParts = dobStr.split("/");
+            Date dobDate = new Date(
+                    Integer.parseInt(dobParts[2]), // year
+                    Integer.parseInt(dobParts[0]), // month
+                    Integer.parseInt(dobParts[1]) // day
+            );
 
-                if (appt.getPatient().getFirstName().equalsIgnoreCase(firstName)
-                        && appt.getPatient().getLastName().equalsIgnoreCase(lastName)
-                        && appt.getDate().equals(appointmentDate)
-                        && appt.getTimeslot().equals(timeslotObj)) {
-                    System.out.println(
-                            firstName + " " + lastName + " has an existing appointment at the same time slot.");
-                    return;
-                }
-            }
-
-            // Assign the next available technician from the providers list
-            Technician technician = assignTechnician();
-            if (technician == null) {
-                System.out.println("Cannot find an available technician.");
-                return;
-            }
-
-            // Parse the date of birth
-            String[] dobParts = dob.split("/");
-            int dobMonth = Integer.parseInt(dobParts[0]);
-            int dobDay = Integer.parseInt(dobParts[1]);
-            int dobYear = Integer.parseInt(dobParts[2]);
-            Date dobDate = new Date(dobYear, dobMonth, dobDay); // Create Date object for DOB
-
-            // Validate patient's date of birth
             String dobValidationResult = isValidDateOfBirth(dobDate);
             if (dobValidationResult != null) {
                 System.out.println(dobValidationResult);
                 return;
             }
 
-            Profile profile = new Profile(firstName, lastName, dobDate); // Construct the Profile object
-            Patient patient = new Patient(profile); // Create a Patient object
+            // Check for existing appointments at the same time
+            Profile patientProfile = new Profile(firstName, lastName, dobDate);
+            for (Appointment appt : appointments) {
+                if (appt.getPatient().getProfile().equals(patientProfile) &&
+                        appt.getDate().equals(appointmentDate) &&
+                        appt.getTimeslot().equals(timeslotObj)) {
+                    System.out.println(firstName + " " + lastName + " " + dobStr +
+                            " has an existing appointment at the same time slot.");
+                    return;
+                }
+            }
 
-            // Create the Imaging appointment using timeslotObj to avoid inconsistency
+            // Assign technician using rotation
+            Technician technician = assignTechnicianForService(imagingService, appointmentDate, timeslotObj);
+            if (technician == null) {
+                System.out.printf("Cannot find an available technician at all locations for %s at slot %s.%n",
+                        imagingService.toUpperCase(),
+                        timeslotObj.toString());
+                return;
+            }
+
+            // Create and add the appointment
+            Patient patient = new Patient(patientProfile);
             Radiology room = Radiology.valueOf(imagingService.toUpperCase());
             Imaging imagingAppointment = new Imaging(appointmentDate, timeslotObj, patient, technician, room);
-            appointments.add(imagingAppointment); // Add the new appointment to the list
+            appointments.add(imagingAppointment);
+            technicianList.addAvailableRoom(imagingService, technician.getLocation().getCity(), timeslotObj);
 
-            // Print the appointment details
-            System.out.printf("%s %s %s %s [%s][%s, %s %s][rate: $%.2f][%s] booked.%n",
-                    date, // Appointment date
-                    timeslot, // Appointment time
-                    firstName, // Patient's first name
-                    lastName, // Patient's last name
-                    technician.getProfile().getFirstName() + " " + technician.getProfile().getLastName(), // Technician's
-                                                                                                          // name
-                    technician.getLocation().getCity(), // Technician's city
-                    technician.getLocation().getCounty(), // Technician's county
-                    technician.getLocation().getZip(), // Technician's zip code
-                    (double) technician.rate(), // Technician's rate formatted to double
-                    imagingService // Imaging service name
-            );
+            // Print confirmation
+            System.out.printf("%s %s %s %s %s [%s %s, %s %s][rate: $%.2f][%s] booked.%n",
+                    appointmentDate,
+                    timeslotObj,
+                    firstName,
+                    lastName,
+                    dobStr,
+                    technician.getProfile().getFirstName(),
+                    technician.getProfile().getLastName(),
+                    technician.getLocation().getCity(),
+                    technician.getLocation().getCounty(),
+                    (double) technician.rate(),
+                    imagingService);
 
         } catch (Exception e) {
             System.out.println("Error processing the imaging appointment: " + e.getMessage());
@@ -677,7 +676,8 @@ public class ClinicManager {
     }
 
     private void listOfficeAppointments() {
-        System.out.println("Listing office appointments...");
+        System.out.println();
+        System.out.println("** List of office appointments ordered by county/date/time.");
 
         // Sort appointments by county, date, and timeslot
         Sort.appointmentByCounty(appointments);
@@ -688,10 +688,13 @@ public class ClinicManager {
                 System.out.println(appointment);
             }
         }
+        System.out.println("** end of list");
+
     }
 
     private void listImagingAppointments() {
-        System.out.println("Listing imaging appointments...");
+        System.out.println(); // This creates an empty line
+        System.out.println("** List of radiology appointments ordered by county/date/time.");
 
         Sort.appointmentByCounty(appointments); // Sort by county, then date and time
 
@@ -700,6 +703,7 @@ public class ClinicManager {
                 System.out.println(appointment);
             }
         }
+        System.out.println("** end of list");
     }
 
     private void displayCredits() {
@@ -773,13 +777,43 @@ public class ClinicManager {
         return null;
     }
 
-    private Technician assignTechnician() {
-        // Assign a technician from the providers list
-        if (technicianList.size() > 0) {
-            // Get the next available technician in the round-robin order
-            return technicianList.getNextTechnician();
+    private Technician assignTechnicianForService(String imagingService, Date appointmentDate, Timeslot timeslotObj) {
+        if (technicianList.isEmpty()) {
+            return null;
         }
-        return null; // No technician available
+
+        // Start fresh rotation
+        Technician firstTechnician = technicianList.getFirstTechnician();
+        if (firstTechnician == null) {
+            return null;
+        }
+
+        // Track rotation using technician identifiers
+        String firstTechIdentifier = firstTechnician.getProfile().getFirstName() +
+                firstTechnician.getProfile().getLastName();
+        Technician currentTech;
+
+        do {
+            currentTech = technicianList.getNextTechnician();
+            if (currentTech == null) {
+                break;
+            }
+
+            String location = currentTech.getLocation().getCity();
+            if (technicianList.isRoomAvailable(imagingService, location, timeslotObj)) {
+                return currentTech;
+            }
+
+            String currentTechIdentifier = currentTech.getProfile().getFirstName() +
+                    currentTech.getProfile().getLastName();
+
+            // Check if we've completed a full rotation
+            if (currentTechIdentifier.equals(firstTechIdentifier)) {
+                break;
+            }
+        } while (true);
+
+        return null;
     }
 
     // Method to initialize and add technicians

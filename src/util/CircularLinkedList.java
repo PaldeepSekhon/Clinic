@@ -1,5 +1,8 @@
 package util;
 
+import java.util.HashSet;
+
+import ruclinic.Radiology;
 import ruclinic.Technician;
 
 public class CircularLinkedList {
@@ -7,11 +10,19 @@ public class CircularLinkedList {
     private Node current; // Pointer for round-robin traversal
     private int size;
 
+    // HashSets to track available timeslots for each imaging service
+    private HashSet<Pair> xrayRooms;
+    private HashSet<Pair> ultrasoundRooms;
+    private HashSet<Pair> catScanRooms;
     // Constructor for CircularLinkedList
+
     public CircularLinkedList() {
         tail = null;
         current = null;
         size = 0;
+        xrayRooms = new HashSet<>(); // Initialize the available rooms
+        ultrasoundRooms = new HashSet<>();
+        catScanRooms = new HashSet<>();
     }
 
     // Add a technician to the circular linked list at the beginning
@@ -112,4 +123,70 @@ public class CircularLinkedList {
     public int size() {
         return size;
     }
+
+    public Radiology getRoomForService(String imagingService) {
+        switch (imagingService.toUpperCase()) {
+            case "XRAY":
+                return Radiology.XRAY; // Return Radiology enum directly
+            case "ULTRASOUND":
+                return Radiology.ULTRASOUND;
+            case "CATSCAN":
+                return Radiology.CATSCAN;
+            default:
+                throw new IllegalArgumentException("Invalid imaging service: " + imagingService);
+        }
+
+    }
+
+    // Add available room
+    public void addAvailableRoom(String imagingService, String location, Timeslot timeslot) {
+        Pair roomPair = new Pair(location, timeslot);
+        switch (imagingService.toUpperCase()) {
+            case "XRAY":
+                xrayRooms.add(roomPair);
+                break;
+            case "ULTRASOUND":
+                ultrasoundRooms.add(roomPair);
+                break;
+            case "CATSCAN":
+                catScanRooms.add(roomPair);
+                break;
+            default:
+                throw new IllegalArgumentException("Invalid imaging service: " + imagingService);
+        }
+    }
+
+    // Remove available room
+    public void removeAvailableRoom(String imagingService, String location, Timeslot timeslot) {
+        Pair roomPair = new Pair(location, timeslot);
+        switch (imagingService.toUpperCase()) {
+            case "XRAY":
+                xrayRooms.remove(roomPair);
+                break;
+            case "ULTRASOUND":
+                ultrasoundRooms.remove(roomPair);
+                break;
+            case "CATSCAN":
+                catScanRooms.remove(roomPair);
+                break;
+            default:
+                throw new IllegalArgumentException("Invalid imaging service: " + imagingService);
+        }
+    }
+
+    // Check if room is available
+    public boolean isRoomAvailable(String imagingService, String location, Timeslot timeslot) {
+        Pair roomPair = new Pair(location, timeslot);
+        switch (imagingService.toUpperCase()) {
+            case "XRAY":
+                return !xrayRooms.contains(roomPair); // Should return true if it contains, indicating it's booked
+            case "ULTRASOUND":
+                return !ultrasoundRooms.contains(roomPair);
+            case "CATSCAN":
+                return !catScanRooms.contains(roomPair);
+            default:
+                throw new IllegalArgumentException("Invalid imaging service: " + imagingService);
+        }
+    }
+
 }
