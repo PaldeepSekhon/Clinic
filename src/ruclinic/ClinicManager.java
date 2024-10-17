@@ -12,6 +12,7 @@ import util.Pair;
 import util.Sort;
 import util.Timeslot;
 
+
 /**
  * The ClinicManager class is responsible for managing the clinic's operations,
  * processing commands, and handling appointments, providers, and billing.
