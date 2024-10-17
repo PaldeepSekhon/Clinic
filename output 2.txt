@@ -1,4 +1,4 @@
-Providers loaded to the list okok.
+Providers loaded to the list.
 [CHARLES BROWN 6/24/1999, BRIDGEWATER, Somerset 08807][rate: $100.00]
 [JUSTIN CERAVOLO 9/22/1980, EDISON, Middlesex 08817][PEDIATRICIAN, #09]
 [MONICA FOX 10/10/1995, BRIDGEWATER, Somerset 08807][rate: $130.00]
@@ -17,7 +17,7 @@ Providers loaded to the list okok.
 [MONICA ZIMNES 3/11/1981, CLARK, Union 07066][FAMILY, #11]
 
 Rotation list for the technicians.
-JENNY PATEL (BRIDGEWATER) --> MONICA FOX (BRIDGEWATER) --> CHARLES BROWN (BRIDGEWATER) --> FRANK LIN (PISCATAWAY) --> BEN JERRY (PISCATAWAY) --> *GARY JOHNSON (PISCATAWAY)*
+JENNY PATEL (BRIDGEWATER) --> MONICA FOX (BRIDGEWATER) --> CHARLES BROWN (BRIDGEWATER) --> FRANK LIN (PISCATAWAY) --> BEN JERRY (PISCATAWAY) --> GARY JOHNSON (PISCATAWAY)
 
 Clinic Manager is running...
 
@@ -92,118 +92,32 @@ AA - provider doesn't exist.
 [RACHAEL LIM 11/30/1975, BRIDGEWATER, Somerset 08807][PEDIATRICIAN, #23] is not available at slot 11.
 [JOHN HARPER 3/1/1981, CLARK, Union 07066][FAMILY, #32] is not available at slot 8.
 mri - imaging service not provided.
-Starting technician rotation for xray at 9:30 AM
-JENNY PATEL
-Checking technician: JENNY PATEL
-Room for xray at BRIDGEWATER is available for 9:30 AM
-Assigned technician: JENNY PATEL for xray
-2/28/2025 9:30 AM John Doe 12/13/1989 [JENNY PATEL 8/9/1991, BRIDGEWATER, Somerset 08807][rate: $125.00][XRAY] booked.
+2/28/2025 9:30 AM John Doe 12/13/1989 [JENNY PATEL, BRIDGEWATER Somerset][rate: $125.00][xray] booked.
 John Doe 12/13/1989 has an existing appointment at the same time slot.
-Starting technician rotation for xray at 9:30 AM
-MONICA FOX
-Checking technician: MONICA FOX
-Room for xray at BRIDGEWATER is already booked for 9:30 AM
-Technician MONICA FOX or room is not available at 9:30 AM
-Checking technician: CHARLES BROWN
-Room for xray at BRIDGEWATER is already booked for 9:30 AM
-Technician CHARLES BROWN or room is not available at 9:30 AM
-Checking technician: FRANK LIN
-Room for xray at PISCATAWAY is available for 9:30 AM
-Assigned technician: FRANK LIN for xray
-2/28/2025 9:30 AM Jane Doe 5/1/1996 [FRANK LIN 6/24/1999, PISCATAWAY, Middlesex 08854][rate: $120.00][XRAY] booked.
-Starting technician rotation for ultrasound at 10:00 AM
-BEN JERRY
-Checking technician: BEN JERRY
-Room for ultrasound at PISCATAWAY is available for 10:00 AM
-Assigned technician: BEN JERRY for ultrasound
-2/3/2025 10:00 AM John Doe 12/13/1989 [BEN JERRY 9/28/1987, PISCATAWAY, Middlesex 08854][rate: $150.00][ULTRASOUND] booked.
-Starting technician rotation for ultrasound at 10:00 AM
-GARY JOHNSON
-Checking technician: GARY JOHNSON
-Room for ultrasound at PISCATAWAY is already booked for 10:00 AM
-Technician GARY JOHNSON or room is not available at 10:00 AM
-Checking technician: JENNY PATEL
-Room for ultrasound at BRIDGEWATER is available for 10:00 AM
-Assigned technician: JENNY PATEL for ultrasound
-2/3/2025 10:00 AM Jane Doe 5/1/1996 [JENNY PATEL 8/9/1991, BRIDGEWATER, Somerset 08807][rate: $125.00][ULTRASOUND] booked.
-Starting technician rotation for ultrasound at 10:00 AM
-MONICA FOX
-Checking technician: MONICA FOX
-Room for ultrasound at BRIDGEWATER is already booked for 10:00 AM
-Technician MONICA FOX or room is not available at 10:00 AM
-Checking technician: CHARLES BROWN
-Room for ultrasound at BRIDGEWATER is already booked for 10:00 AM
-Technician CHARLES BROWN or room is not available at 10:00 AM
-Checking technician: FRANK LIN
-Room for ultrasound at PISCATAWAY is already booked for 10:00 AM
-Technician FRANK LIN or room is not available at 10:00 AM
-Checking technician: BEN JERRY
-Technician BEN JERRY or room is not available at 10:00 AM
-Checking technician: GARY JOHNSON
-Room for ultrasound at PISCATAWAY is already booked for 10:00 AM
-Technician GARY JOHNSON or room is not available at 10:00 AM
-Checking technician: JENNY PATEL
-Technician JENNY PATEL or room is not available at 10:00 AM
+2/28/2025 9:30 AM Jane Doe 5/1/1996 [FRANK LIN, PISCATAWAY Middlesex][rate: $120.00][xray] booked.
+2/3/2025 10:00 AM John Doe 12/13/1989 [BEN JERRY, PISCATAWAY Middlesex][rate: $150.00][ultrasound] booked.
+2/3/2025 10:00 AM Jane Doe 5/1/1996 [JENNY PATEL, BRIDGEWATER Somerset][rate: $125.00][ultrasound] booked.
 Cannot find an available technician at all locations for ULTRASOUND at slot 10:00 AM.
-Starting technician rotation for xray at 10:00 AM
-CHARLES BROWN
-Checking technician: CHARLES BROWN
-Room for xray at BRIDGEWATER is available for 10:00 AM
-Assigned technician: CHARLES BROWN for xray
-2/3/2025 10:00 AM Kate Lindsey 7/15/2002 [CHARLES BROWN 6/24/1999, BRIDGEWATER, Somerset 08807][rate: $100.00][XRAY] booked.
-Starting technician rotation for xray at 10:00 AM
-FRANK LIN
-Checking technician: FRANK LIN
-Room for xray at PISCATAWAY is available for 10:00 AM
-Assigned technician: FRANK LIN for xray
-2/3/2025 10:00 AM April March 1/20/2003 [FRANK LIN 6/24/1999, PISCATAWAY, Middlesex 08854][rate: $120.00][XRAY] booked.
-Starting technician rotation for catscan at 10:00 AM
-BEN JERRY
-Checking technician: BEN JERRY
-Technician BEN JERRY or room is not available at 10:00 AM
-Checking technician: GARY JOHNSON
-Room for catscan at PISCATAWAY is available for 10:00 AM
-Assigned technician: GARY JOHNSON for catscan
-2/3/2025 10:00 AM Roy Brook 2/29/2004 [GARY JOHNSON 11/14/1987, PISCATAWAY, Middlesex 08854][rate: $110.00][CATSCAN] booked.
-Starting technician rotation for catscan at 10:00 AM
-JENNY PATEL
-Checking technician: JENNY PATEL
-Technician JENNY PATEL or room is not available at 10:00 AM
-Checking technician: MONICA FOX
-Room for catscan at BRIDGEWATER is available for 10:00 AM
-Assigned technician: MONICA FOX for catscan
-2/3/2025 10:00 AM Carl Brown 8/8/1999 [MONICA FOX 10/10/1995, BRIDGEWATER, Somerset 08807][rate: $130.00][CATSCAN] booked.
-Starting technician rotation for catscan at 2:00 PM
-CHARLES BROWN
-Checking technician: CHARLES BROWN
-Room for catscan at BRIDGEWATER is available for 2:00 PM
-Assigned technician: CHARLES BROWN for catscan
-2/3/2025 2:00 PM Duke Ellington 1/20/2003 [CHARLES BROWN 6/24/1999, BRIDGEWATER, Somerset 08807][rate: $100.00][CATSCAN] booked.
-Starting technician rotation for catscan at 9:30 AM
-FRANK LIN
-Checking technician: FRANK LIN
-Room for catscan at PISCATAWAY is available for 9:30 AM
-Assigned technician: FRANK LIN for catscan
-2/3/2025 9:30 AM April March 1/20/2003 [FRANK LIN 6/24/1999, PISCATAWAY, Middlesex 08854][rate: $120.00][CATSCAN] booked.
-Starting technician rotation for catscan at 11:30 AM
-BEN JERRY
-Checking technician: BEN JERRY
-Room for catscan at PISCATAWAY is available for 11:30 AM
-Assigned technician: BEN JERRY for catscan
-2/3/2025 11:30 AM Paul Siegel 5/1/2000 [BEN JERRY 9/28/1987, PISCATAWAY, Middlesex 08854][rate: $150.00][CATSCAN] booked.
+2/3/2025 10:00 AM Kate Lindsey 7/15/2002 [MONICA FOX, BRIDGEWATER Somerset][rate: $130.00][xray] booked.
+2/3/2025 10:00 AM April March 1/20/2003 [FRANK LIN, PISCATAWAY Middlesex][rate: $120.00][xray] booked.
+2/3/2025 10:00 AM Roy Brook 2/29/2004 [BEN JERRY, PISCATAWAY Middlesex][rate: $150.00][catscan] booked.
+2/3/2025 10:00 AM Carl Brown 8/8/1999 [JENNY PATEL, BRIDGEWATER Somerset][rate: $125.00][catscan] booked.
+2/3/2025 2:00 PM Duke Ellington 1/20/2003 [MONICA FOX, BRIDGEWATER Somerset][rate: $130.00][catscan] booked.
+2/3/2025 9:30 AM April March 1/20/2003 [CHARLES BROWN, BRIDGEWATER Somerset][rate: $100.00][catscan] booked.
+2/3/2025 11:30 AM Paul Siegel 5/1/2000 [FRANK LIN, PISCATAWAY Middlesex][rate: $120.00][catscan] booked.
 
 ** List of radiology appointments ordered by county/date/time.
 2/28/2025 9:30 AM John Doe 12/13/1989 [JENNY PATEL, BRIDGEWATER, Somerset 08807, N/A], Imaging Room: XRAY
 2/28/2025 9:30 AM Jane Doe 5/1/1996 [FRANK LIN, PISCATAWAY, Middlesex 08854, N/A], Imaging Room: XRAY
 2/3/2025 10:00 AM John Doe 12/13/1989 [BEN JERRY, PISCATAWAY, Middlesex 08854, N/A], Imaging Room: ULTRASOUND
 2/3/2025 10:00 AM Jane Doe 5/1/1996 [JENNY PATEL, BRIDGEWATER, Somerset 08807, N/A], Imaging Room: ULTRASOUND
-2/3/2025 10:00 AM Kate Lindsey 7/15/2002 [CHARLES BROWN, BRIDGEWATER, Somerset 08807, N/A], Imaging Room: XRAY
+2/3/2025 10:00 AM Kate Lindsey 7/15/2002 [MONICA FOX, BRIDGEWATER, Somerset 08807, N/A], Imaging Room: XRAY
 2/3/2025 10:00 AM April March 1/20/2003 [FRANK LIN, PISCATAWAY, Middlesex 08854, N/A], Imaging Room: XRAY
-2/3/2025 10:00 AM Roy Brook 2/29/2004 [GARY JOHNSON, PISCATAWAY, Middlesex 08854, N/A], Imaging Room: CATSCAN
-2/3/2025 10:00 AM Carl Brown 8/8/1999 [MONICA FOX, BRIDGEWATER, Somerset 08807, N/A], Imaging Room: CATSCAN
-2/3/2025 2:00 PM Duke Ellington 1/20/2003 [CHARLES BROWN, BRIDGEWATER, Somerset 08807, N/A], Imaging Room: CATSCAN
-2/3/2025 9:30 AM April March 1/20/2003 [FRANK LIN, PISCATAWAY, Middlesex 08854, N/A], Imaging Room: CATSCAN
-2/3/2025 11:30 AM Paul Siegel 5/1/2000 [BEN JERRY, PISCATAWAY, Middlesex 08854, N/A], Imaging Room: CATSCAN
+2/3/2025 10:00 AM Roy Brook 2/29/2004 [BEN JERRY, PISCATAWAY, Middlesex 08854, N/A], Imaging Room: CATSCAN
+2/3/2025 10:00 AM Carl Brown 8/8/1999 [JENNY PATEL, BRIDGEWATER, Somerset 08807, N/A], Imaging Room: CATSCAN
+2/3/2025 2:00 PM Duke Ellington 1/20/2003 [MONICA FOX, BRIDGEWATER, Somerset 08807, N/A], Imaging Room: CATSCAN
+2/3/2025 9:30 AM April March 1/20/2003 [CHARLES BROWN, BRIDGEWATER, Somerset 08807, N/A], Imaging Room: CATSCAN
+2/3/2025 11:30 AM Paul Siegel 5/1/2000 [FRANK LIN, PISCATAWAY, Middlesex 08854, N/A], Imaging Room: CATSCAN
 ** end of list
 11/5/2024 9:00 AM Carl Brown 8/8/1999 [RACHAEL LIM 11/30/1975, BRIDGEWATER, Somerset 08807][PEDIATRICIAN, #23] booked.
 11/5/2024 9:30 AM John Doe 1/13/1985 [TOM KAUR 11/5/1972, PRINCETON, Mercer 08542][ALLERGIST, #54] booked.
@@ -279,13 +193,13 @@ Listing appointments sorted by county...
 2/28/2025 9:30 AM Jane Doe 5/1/1996 [FRANK LIN, PISCATAWAY, Middlesex 08854, N/A], Imaging Room: XRAY
 2/3/2025 10:00 AM John Doe 12/13/1989 [BEN JERRY, PISCATAWAY, Middlesex 08854, N/A], Imaging Room: ULTRASOUND
 2/3/2025 10:00 AM Jane Doe 5/1/1996 [JENNY PATEL, BRIDGEWATER, Somerset 08807, N/A], Imaging Room: ULTRASOUND
-2/3/2025 10:00 AM Kate Lindsey 7/15/2002 [CHARLES BROWN, BRIDGEWATER, Somerset 08807, N/A], Imaging Room: XRAY
+2/3/2025 10:00 AM Kate Lindsey 7/15/2002 [MONICA FOX, BRIDGEWATER, Somerset 08807, N/A], Imaging Room: XRAY
 2/3/2025 10:00 AM April March 1/20/2003 [FRANK LIN, PISCATAWAY, Middlesex 08854, N/A], Imaging Room: XRAY
-2/3/2025 10:00 AM Roy Brook 2/29/2004 [GARY JOHNSON, PISCATAWAY, Middlesex 08854, N/A], Imaging Room: CATSCAN
-2/3/2025 10:00 AM Carl Brown 8/8/1999 [MONICA FOX, BRIDGEWATER, Somerset 08807, N/A], Imaging Room: CATSCAN
-2/3/2025 2:00 PM Duke Ellington 1/20/2003 [CHARLES BROWN, BRIDGEWATER, Somerset 08807, N/A], Imaging Room: CATSCAN
-2/3/2025 9:30 AM April March 1/20/2003 [FRANK LIN, PISCATAWAY, Middlesex 08854, N/A], Imaging Room: CATSCAN
-2/3/2025 11:30 AM Paul Siegel 5/1/2000 [BEN JERRY, PISCATAWAY, Middlesex 08854, N/A], Imaging Room: CATSCAN
+2/3/2025 10:00 AM Roy Brook 2/29/2004 [BEN JERRY, PISCATAWAY, Middlesex 08854, N/A], Imaging Room: CATSCAN
+2/3/2025 10:00 AM Carl Brown 8/8/1999 [JENNY PATEL, BRIDGEWATER, Somerset 08807, N/A], Imaging Room: CATSCAN
+2/3/2025 2:00 PM Duke Ellington 1/20/2003 [MONICA FOX, BRIDGEWATER, Somerset 08807, N/A], Imaging Room: CATSCAN
+2/3/2025 9:30 AM April March 1/20/2003 [CHARLES BROWN, BRIDGEWATER, Somerset 08807, N/A], Imaging Room: CATSCAN
+2/3/2025 11:30 AM Paul Siegel 5/1/2000 [FRANK LIN, PISCATAWAY, Middlesex 08854, N/A], Imaging Room: CATSCAN
 10/29/2024 3:00 PM John Doe 1/13/1985 [TOM KAUR, PRINCETON, Mercer 08542, ALLERGIST]
 11/5/2024 9:30 AM John Doe 1/13/1985 [TOM KAUR, PRINCETON, Mercer 08542, ALLERGIST]
 10/30/2024 11:30 AM April March 1/20/2003 [BEN JERRY, PISCATAWAY, Middlesex 08854, FAMILY]
@@ -318,20 +232,11 @@ Listing appointments sorted by county...
 (15) ERIC TAYLOR [5/29/1969] [credit amount: $300.00]
 (16) MONICA ZIMNES [3/11/1981] [credit amount: $250.00]
 ** end of list **
-** Billing Statements for all Patients **
-Duke Ellington: Total Bill = $450.00
-John Doe: Total Bill = $1225.00
-Roy Brook: Total Bill = $410.00
-Paul Siegel: Total Bill = $950.00
-April March: Total Bill = $740.00
-Kate Lindsey: Total Bill = $650.00
-Carl Brown: Total Bill = $680.00
-Jane Doe: Total Bill = $1545.00
-** End of Billing Statements **
+Displaying billing statements...
 Listing appointments sorted by patient...
-2/3/2025 10:00 AM Roy Brook 2/29/2004 [GARY JOHNSON, PISCATAWAY, Middlesex 08854, N/A], Imaging Room: CATSCAN
+2/3/2025 10:00 AM Roy Brook 2/29/2004 [BEN JERRY, PISCATAWAY, Middlesex 08854, N/A], Imaging Room: CATSCAN
 2/11/2025 11:30 AM Roy Brook 2/29/2004 [JUSTIN CERAVOLO, EDISON, Middlesex 08817, PEDIATRICIAN]
-2/3/2025 10:00 AM Carl Brown 8/8/1999 [MONICA FOX, BRIDGEWATER, Somerset 08807, N/A], Imaging Room: CATSCAN
+2/3/2025 10:00 AM Carl Brown 8/8/1999 [JENNY PATEL, BRIDGEWATER, Somerset 08807, N/A], Imaging Room: CATSCAN
 11/5/2024 9:00 AM Carl Brown 8/8/1999 [RACHAEL LIM, BRIDGEWATER, Somerset 08807, PEDIATRICIAN]
 2/11/2025 2:00 PM Carl Brown 8/8/1999 [ANDREW PATEL, BRIDGEWATER, Somerset 08807, FAMILY]
 10/30/2024 4:00 PM Jane Doe 5/1/1996 [RACHAEL LIM, BRIDGEWATER, Somerset 08807, PEDIATRICIAN]
@@ -346,16 +251,16 @@ Listing appointments sorted by patient...
 2/3/2025 10:00 AM John Doe 12/13/1989 [BEN JERRY, PISCATAWAY, Middlesex 08854, N/A], Imaging Room: ULTRASOUND
 10/29/2024 3:00 PM John Doe 1/13/1985 [TOM KAUR, PRINCETON, Mercer 08542, ALLERGIST]
 11/5/2024 9:30 AM John Doe 1/13/1985 [TOM KAUR, PRINCETON, Mercer 08542, ALLERGIST]
-2/3/2025 2:00 PM Duke Ellington 1/20/2003 [CHARLES BROWN, BRIDGEWATER, Somerset 08807, N/A], Imaging Room: CATSCAN
+2/3/2025 2:00 PM Duke Ellington 1/20/2003 [MONICA FOX, BRIDGEWATER, Somerset 08807, N/A], Imaging Room: CATSCAN
 1/17/2025 11:00 AM Duke Ellington 1/20/2003 [BEN RAMESH, MORRISTOWN, Morris 07960, ALLERGIST]
-2/3/2025 10:00 AM Kate Lindsey 7/15/2002 [CHARLES BROWN, BRIDGEWATER, Somerset 08807, N/A], Imaging Room: XRAY
+2/3/2025 10:00 AM Kate Lindsey 7/15/2002 [MONICA FOX, BRIDGEWATER, Somerset 08807, N/A], Imaging Room: XRAY
 11/5/2024 11:30 AM Kate Lindsey 7/15/2002 [BEN JERRY, PISCATAWAY, Middlesex 08854, FAMILY]
 12/11/2024 10:00 AM Kate Lindsey 7/15/2002 [ERIC TAYLOR, PISCATAWAY, Middlesex 08854, PEDIATRICIAN]
 2/3/2025 10:00 AM April March 1/20/2003 [FRANK LIN, PISCATAWAY, Middlesex 08854, N/A], Imaging Room: XRAY
-2/3/2025 9:30 AM April March 1/20/2003 [FRANK LIN, PISCATAWAY, Middlesex 08854, N/A], Imaging Room: CATSCAN
+2/3/2025 9:30 AM April March 1/20/2003 [CHARLES BROWN, BRIDGEWATER, Somerset 08807, N/A], Imaging Room: CATSCAN
 10/30/2024 11:30 AM April March 1/20/2003 [BEN JERRY, PISCATAWAY, Middlesex 08854, FAMILY]
 12/11/2024 10:30 AM April March 1/20/2003 [MONICA ZIMNES, CLARK, Union 07066, FAMILY]
-2/3/2025 11:30 AM Paul Siegel 5/1/2000 [BEN JERRY, PISCATAWAY, Middlesex 08854, N/A], Imaging Room: CATSCAN
+2/3/2025 11:30 AM Paul Siegel 5/1/2000 [FRANK LIN, PISCATAWAY, Middlesex 08854, N/A], Imaging Room: CATSCAN
 12/2/2024 4:00 PM Paul Siegel 5/1/2000 [GARY JOHNSON, EDISON, Middlesex 08817, FAMILY]
 12/30/2024 3:30 PM Paul Siegel 5/1/2000 [RACHAEL LIM, BRIDGEWATER, Somerset 08807, PEDIATRICIAN]
 2/11/2025 2:30 PM Paul Siegel 5/1/2000 [MONICA ZIMNES, CLARK, Union 07066, FAMILY]

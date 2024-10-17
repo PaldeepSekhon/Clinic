@@ -139,4 +139,31 @@ public class Appointment implements Comparable<Appointment> {
     public void setProvider(Provider provider) {
         this.provider = provider;
     }
+
+    /**
+     * Gets the service type of the appointment if it's an imaging appointment.
+     * 
+     * @return the service type (XRAY, ULTRASOUND, CATSCAN) if it's an imaging
+     *         appointment,
+     *         or null if it's a regular appointment
+     */
+    public String getServiceType() {
+        if (this instanceof Imaging) {
+            Imaging imaging = (Imaging) this;
+            return imaging.getRoom().toString();
+        }
+        return null;
+    }
+
+    /**
+     * Gets the technician for this appointment if it's an imaging appointment.
+     * 
+     * @return the Technician if the provider is a Technician, null otherwise
+     */
+    public Technician getTechnician() {
+        if (provider instanceof Technician) {
+            return (Technician) provider;
+        }
+        return null;
+    }
 }

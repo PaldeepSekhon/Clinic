@@ -4,7 +4,6 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.Calendar;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Map;
 import java.util.Scanner;
 
@@ -13,7 +12,6 @@ import util.Date;
 import util.Sort;
 import util.TechnicianSchedule;
 import util.Timeslot;
-
 
 /**
  * The ClinicManager class is responsible for managing the clinic's operations,
@@ -37,7 +35,6 @@ public class ClinicManager {
     private util.List<Appointment> appointments; // List to hold all appointments
     private util.List<Provider> providers; // Single list for all providers
     private CircularLinkedList technicianList;
-    private HashSet<TechnicianSchedule> technicianBookings = new HashSet<>();
 
     // Constructor
     public ClinicManager() {
@@ -488,7 +485,6 @@ public class ClinicManager {
             Radiology room = Radiology.valueOf(imagingService.toUpperCase());
             Imaging imagingAppointment = new Imaging(appointmentDate, timeslotObj, patient, technician, room);
             appointments.add(imagingAppointment);
-            technicianList.addAvailableRoom(imagingService, technician.getLocation().getCity(), timeslotObj);
 
             // Print confirmation
             System.out.printf("%s %s %s %s %s [%s %s %s, %s, %s %s][rate: $%.2f][%s] booked.%n",
@@ -747,44 +743,43 @@ public class ClinicManager {
     }
 
     private void displayBillingStatements() {
-            System.out.println("** Billing Statements for all Patients **");
+        System.out.println("** Billing Statements for all Patients **");
 
-    // HashMap to store total billing amounts for each patient
-    HashMap<String, Double> patientBills = new HashMap<>();
+        // HashMap to store total billing amounts for each patient
+        HashMap<String, Double> patientBills = new HashMap<>();
 
-    // Iterate over all appointments (assuming they are all completed)
-    for (Appointment appointment : appointments) {
-        Person patient = appointment.getPatient();
-        String patientName = patient.getProfile().getFirstName() + " " + patient.getProfile().getLastName();
+        // Iterate over all appointments (assuming they are all completed)
+        for (Appointment appointment : appointments) {
+            Person patient = appointment.getPatient();
+            String patientName = patient.getProfile().getFirstName() + " " + patient.getProfile().getLastName();
 
-        // Determine the charge based on the provider (doctor or technician)
-        Provider provider = appointment.getProvider();
-        double charge = 0;
+            // Determine the charge based on the provider (doctor or technician)
+            Provider provider = appointment.getProvider();
+            double charge = 0;
 
-        if (provider instanceof Doctor) {
-            Doctor doctor = (Doctor) provider;
-            charge = doctor.rate(); // Charge based on the doctor's specialty rate
-        } else if (provider instanceof Technician) {
-            Technician technician = (Technician) provider;
-            charge = technician.getRatePerVisit(); // Charge based on the technician's rate
+            if (provider instanceof Doctor) {
+                Doctor doctor = (Doctor) provider;
+                charge = doctor.rate(); // Charge based on the doctor's specialty rate
+            } else if (provider instanceof Technician) {
+                Technician technician = (Technician) provider;
+                charge = technician.getRatePerVisit(); // Charge based on the technician's rate
+            }
+
+            // Add the charge to the patient's total bill
+            patientBills.put(patientName, patientBills.getOrDefault(patientName, 0.0) + charge);
         }
 
-        // Add the charge to the patient's total bill
-        patientBills.put(patientName, patientBills.getOrDefault(patientName, 0.0) + charge);
-    }
+        // Display billing statements
+        for (Map.Entry<String, Double> entry : patientBills.entrySet()) {
+            String patientName = entry.getKey();
+            double totalBill = entry.getValue();
+            System.out.printf("%s: Total Bill = $%.2f%n", patientName, totalBill);
+        }
 
-    // Display billing statements
-    for (Map.Entry<String, Double> entry : patientBills.entrySet()) {
-        String patientName = entry.getKey();
-        double totalBill = entry.getValue();
-        System.out.printf("%s: Total Bill = $%.2f%n", patientName, totalBill);
-    }
+        // Clear all appointments as they are now billed
+        // appointments = null;
 
-    // Clear all appointments as they are now billed
-    //appointments = null;
-
-    System.out.println("** End of Billing Statements **");
-
+        System.out.println("** End of Billing Statements **");
 
     }
 
@@ -824,103 +819,90 @@ public class ClinicManager {
 
     // The problem is in the loop termination logic. Here's the fixed version with
     // comments explaining the issues:
-    private Technician lastAssignedTechnician = null; 
+    private Technician lastAssignedTechnician = null;
 
     private Technician assignTechnicianForService(String imagingService, Date appointmentDate, Timeslot timeslotObj) {
-         if (technicianList.isEmpty()) {
+        if (technicianList.isEmpty()) {
+            return null;
+        }
+
+        System.out.println("Starting technician rotation for " + imagingService + " at " + timeslotObj);
+
+        // Get starting technician based on last assignment
+        Technician startingTech;
+        if (lastAssignedTechnician == null) {
+            startingTech = technicianList.getFirstTechnician();
+        } else {
+            startingTech = technicianList.getNextTechnician(); // Start from the technician after the last assigned one
+        }
+        System.out.println(startingTech.getName());
+
+        Technician currentTech = startingTech;
+
+        // Loop through all technicians once
+        do {
+            System.out.println("Checking technician: " + currentTech.getProfile().getFirstName() +
+                    " " + currentTech.getProfile().getLastName());
+
+            // Check if technician is available and their location's room is available
+            if (isTechnicianAvailable(currentTech, appointmentDate, timeslotObj) &&
+                    isRoomAvailableAtLocation(currentTech, imagingService, appointmentDate, timeslotObj)) {
+
+                System.out.println("Assigned technician: " + currentTech.getProfile().getFirstName() +
+                        " " + currentTech.getProfile().getLastName() + " for " + imagingService);
+
+                // Book both technician and room
+
+                // Update last assigned technician for next rotation
+                lastAssignedTechnician = currentTech;
+                return currentTech;
+            } else {
+                System.out.println("Technician " + currentTech.getProfile().getFirstName() +
+                        " " + currentTech.getProfile().getLastName() + " or room is not available at " + timeslotObj);
+            }
+
+            currentTech = technicianList.getNextTechnician();
+        } while (currentTech != startingTech);
+
+        // Update the last assigned technician even when no one is available
+        // This ensures next search starts from the next person in rotation
+
         return null;
     }
 
-    System.out.println("Starting technician rotation for " + imagingService + " at " + timeslotObj);
+    private boolean isRoomAvailableAtLocation(Technician technician, String serviceType,
+            Date appointmentDate, Timeslot slot) {
+        String location = technician.getLocation().getCity();
 
-    Technician startingTech;
-    if (lastAssignedTechnician == null) {
-        startingTech = technicianList.getFirstTechnician();
-    } else {
-        startingTech = technicianList.getNextTechnician(); // Start from the technician after the last assigned one
-    }
-    Technician currentTech = startingTech;
+        // Check existing appointments for room conflict at this location
+        for (Appointment appointment : appointments) {
+            if (appointment instanceof Imaging && appointment.getTechnician().getLocation().getCity().equals(location)
+                    &&
+                    appointment.getServiceType().equalsIgnoreCase(serviceType) &&
+                    appointment.getDate().equals(appointmentDate) &&
+                    appointment.getTimeslot().equals(slot)) {
 
-    do {
-        System.out.println("Checking technician: " + currentTech.getProfile().getFirstName() +
-                           " " + currentTech.getProfile().getLastName());
-
-        if (isTechnicianAvailable(currentTech, appointmentDate, timeslotObj)) {
-            String location = currentTech.getLocation().getCity();
-            if (technicianList.isRoomAvailable(imagingService, location, timeslotObj)) {
-                System.out.println("Assigned technician: " + currentTech.getProfile().getFirstName() +
-                                   " " + currentTech.getProfile().getLastName() + " for " + imagingService);
-                bookTechnician(currentTech, appointmentDate, timeslotObj);
-                lastAssignedTechnician = currentTech; // Update the last assigned technician
-                return currentTech;
+                System.out.println("Room for " + serviceType + " at " + location +
+                        " is already booked for " + slot);
+                return false;
             }
-        } else {
-            System.out.println("Technician " + currentTech.getProfile().getFirstName() +
-                               " " + currentTech.getProfile().getLastName() + " is not available at " + timeslotObj);
         }
 
-        currentTech = technicianList.getNextTechnician();
-    } while (currentTech != startingTech);
-
-    System.out.println("Cannot find an available technician at all locations for " + imagingService.toUpperCase() + " at slot " + timeslotObj);
-    return null;
-    }    
-
-    private boolean isTechnicianAvailable(Technician technician, Date appointmentDate, Timeslot timeslot) {
-        TechnicianSchedule technicianSchedule = new TechnicianSchedule(technician.getProfile().getFirstName(), appointmentDate, timeslot);
-
-        if (technicianBookings.contains(technicianSchedule)) {
-            System.out.println("Technician " + technician.getProfile().getFirstName() + " "
-                    + technician.getProfile().getLastName() + " is already booked at " + timeslot + " on " + appointmentDate);
-            return false;
-        }
-    
+        System.out.println("Room for " + serviceType + " at " + location +
+                " is available for " + slot);
         return true;
     }
-    
-    public void bookTechnician(Technician technician, Date appointmentDate, Timeslot timeslot) {
-        TechnicianSchedule technicianSchedule = new TechnicianSchedule(technician.getProfile().getFirstName(), appointmentDate, timeslot);
-        technicianBookings.add(technicianSchedule);
-        
+
+    private boolean isTechnicianAvailable(Technician technician, Date appointmentDate, Timeslot timeslot) {
+        // Check if technician is already booked at this time by examining the
+        // appointments list
+        for (Appointment appointment : appointments) {
+            if (appointment.getTechnician() != null && appointment.getTechnician().equals(technician) &&
+                    appointment.getDate().equals(appointmentDate) &&
+                    appointment.getTimeslot().equals(timeslot)) {
+                return false; // Technician is not available
+            }
+        }
+        return true; // Technician is available
     }
-
-    
-
-    // Method to initialize and add technicians
-    /*
-     * private void initializeTechnicians() {
-     * // Create radiology services for each technician
-     * Date dobJenny = new Date(1991, 8, 9);
-     * Date dobFrank = new Date(1999, 6, 24);
-     * Date dobBen = new Date(1987, 9, 28);
-     * 
-     * 
-     * List<Radiology> jennyServices = new List<>();
-     * jennyServices.add(Radiology.XRAY);
-     * jennyServices.add(Radiology.ULTRASOUND);
-     * 
-     * List<Radiology> frankServices = new List<>();
-     * frankServices.add(Radiology.XRAY);
-     * frankServices.add(Radiology.CATSCAN);
-     * 
-     * List<Radiology> benServices = new List<>();
-     * benServices.add(Radiology.ULTRASOUND);
-     * 
-     * // Create Technician objects
-     * Technician jennyPatel = new Technician(new Profile("Jenny",
-     * "Patel",dobJenny),
-     * Location.BRIDGEWATER, 125, jennyServices);
-     * 
-     * Technician frankLin = new Technician(new Profile("Frank", "Lin",dobFrank),
-     * Location.PISCATAWAY, 120, frankServices);
-     * 
-     * Technician benJerry = new Technician(new Profile("Ben", "Jerry", dobBen),
-     * Location.PISCATAWAY, 150, benServices);
-     * 
-     * // Add the technicians to the technician list
-     * technicianList.add(jennyPatel);
-     * technicianList.add(frankLin);
-     * technicianList.add(benJerry);
-     * }
-     */
 }
