@@ -3,13 +3,15 @@ package ruclinic;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.Calendar;
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Scanner;
 
 import util.CircularLinkedList;
 import util.Date;
-import util.Pair;
 import util.Sort;
+import util.TechnicianSchedule;
 import util.Timeslot;
 
 
@@ -35,7 +37,7 @@ public class ClinicManager {
     private util.List<Appointment> appointments; // List to hold all appointments
     private util.List<Provider> providers; // Single list for all providers
     private CircularLinkedList technicianList;
-    private HashSet<Pair> technicianBookings = new HashSet<>();
+    private HashSet<TechnicianSchedule> technicianBookings = new HashSet<>();
 
     // Constructor
     public ClinicManager() {
@@ -745,8 +747,45 @@ public class ClinicManager {
     }
 
     private void displayBillingStatements() {
-        System.out.println("Displaying billing statements...");
-        // Logic to aggregate billing data by patient can be implemented here
+            System.out.println("** Billing Statements for all Patients **");
+
+    // HashMap to store total billing amounts for each patient
+    HashMap<String, Double> patientBills = new HashMap<>();
+
+    // Iterate over all appointments (assuming they are all completed)
+    for (Appointment appointment : appointments) {
+        Person patient = appointment.getPatient();
+        String patientName = patient.getProfile().getFirstName() + " " + patient.getProfile().getLastName();
+
+        // Determine the charge based on the provider (doctor or technician)
+        Provider provider = appointment.getProvider();
+        double charge = 0;
+
+        if (provider instanceof Doctor) {
+            Doctor doctor = (Doctor) provider;
+            charge = doctor.rate(); // Charge based on the doctor's specialty rate
+        } else if (provider instanceof Technician) {
+            Technician technician = (Technician) provider;
+            charge = technician.getRatePerVisit(); // Charge based on the technician's rate
+        }
+
+        // Add the charge to the patient's total bill
+        patientBills.put(patientName, patientBills.getOrDefault(patientName, 0.0) + charge);
+    }
+
+    // Display billing statements
+    for (Map.Entry<String, Double> entry : patientBills.entrySet()) {
+        String patientName = entry.getKey();
+        double totalBill = entry.getValue();
+        System.out.printf("%s: Total Bill = $%.2f%n", patientName, totalBill);
+    }
+
+    // Clear all appointments as they are now billed
+    appointments = null;
+
+    System.out.println("** End of Billing Statements **");
+
+
     }
 
     // Helper Methods
@@ -790,85 +829,82 @@ public class ClinicManager {
         if (technicianList.isEmpty()) {
             return null;
         }
-
-        // Get the first technician and store as starting point
-       // Technician firstTechnician = technicianList.getFirstTechnician();
+    
+        // Start at the next technician (i.e., continue from where it last left off)
         Technician currentTech = technicianList.getNextTechnician();  
         if (currentTech == null) {
             return null;
         }
-        
+    
+        // Store the first technician in the rotation to avoid an infinite loop
         Technician firstTechnician = currentTech;
         System.out.println("Starting technician rotation for " + imagingService + " at " + timeslotObj);
-
-        // Store the first technician's ID to track full rotation
+    
+        // Store the first technician's identifier to track when the rotation has completed a full cycle
         String firstTechIdentifier = firstTechnician.getProfile().getFirstName() +
-                firstTechnician.getProfile().getLastName();
-
-        // Important: Initialize currentTech with firstTechnician
-      
-
-        // Keep track of whether we've done a full rotation
+                                     firstTechnician.getProfile().getLastName();
+    
+        // Keep track of whether a full rotation has been completed
         boolean hasCompletedRotation = false;
-
+    
         do {
             if (currentTech == null) {
                 break;
             }
-
+    
             System.out.println("Checking technician: " + currentTech.getProfile().getFirstName() +
-                    " " + currentTech.getProfile().getLastName());
-
-            // Check availability
-            if (isTechnicianAvailable(currentTech, timeslotObj)) {
+                               " " + currentTech.getProfile().getLastName());
+    
+            // Check if the technician is available at the given timeslot
+            if (isTechnicianAvailable(currentTech, appointmentDate, timeslotObj)) {
                 String location = currentTech.getLocation().getCity();
                 if (technicianList.isRoomAvailable(imagingService, location, timeslotObj)) {
                     System.out.println("Assigned technician: " + currentTech.getProfile().getFirstName() +
-                            " " + currentTech.getProfile().getLastName() + " for " + imagingService);
-                    bookTechnican(currentTech, timeslotObj);
-                    return currentTech;
+                                       " " + currentTech.getProfile().getLastName() + " for " + imagingService);
+                    bookTechnician(currentTech, appointmentDate, timeslotObj); // Mark technician as booked
+                    return currentTech; // Return the assigned technician
                 }
             } else {
                 System.out.println("Technician " + currentTech.getProfile().getFirstName() +
-                        " " + currentTech.getProfile().getLastName() + " is not available at " + timeslotObj);
+                                   " " + currentTech.getProfile().getLastName() + " is not available at " + timeslotObj);
             }
-
-            // Get next technician AFTER checking current one
+    
+            // Move to the next technician in the list after checking the current one
             currentTech = technicianList.getNextTechnician();
-
-            // Check for rotation completion
+    
+            // Check if we have cycled back to the starting technician
             if (currentTech != null) {
                 String currentTechIdentifier = currentTech.getProfile().getFirstName() +
-                        currentTech.getProfile().getLastName();
+                                               currentTech.getProfile().getLastName();
                 if (currentTechIdentifier.equals(firstTechIdentifier)) {
-                    hasCompletedRotation = true;
+                    hasCompletedRotation = true; // We have completed a full rotation
                     break;
                 }
             }
         } while (!hasCompletedRotation && currentTech != null);
+    
+        return null; // No technician was available after a full rotation
+    }    
 
-        return null;
-    }
-
-    private boolean isTechnicianAvailable(Technician technician, Timeslot timeslot) {
-        // Create a Pair object representing the technician's location and the timeslot
-        Pair technicianSchedule = new Pair(technician.getLocation().getCity(), timeslot);
-
-        // Check if the technician is already booked at this timeslot
+    private boolean isTechnicianAvailable(Technician technician, Date appointmentDate, Timeslot timeslot) {
+        TechnicianSchedule technicianSchedule = new TechnicianSchedule(technician.getProfile().getFirstName(), appointmentDate, timeslot);
+    
         if (technicianBookings.contains(technicianSchedule)) {
             System.out.println("Technician " + technician.getProfile().getFirstName() + " "
-                    + technician.getProfile().getLastName() + " is already booked at " + timeslot);
+                    + technician.getProfile().getLastName() + " is already booked at " + timeslot + " on " + appointmentDate);
             return false; // Technician is booked and not available
         }
-
-        // Technician is available if they are not booked at this timeslot
-        return true;
+    
+        return true; // Technician is available if they are not booked at this date and timeslot
     }
-
-    public void bookTechnican(Technician technician, Timeslot timeslot) {
-        Pair technicianSchedule = new Pair(technician.getLocation().getCity(), timeslot);
+    
+    public void bookTechnician(Technician technician, Date appointmentDate, Timeslot timeslot) {
+        TechnicianSchedule technicianSchedule = new TechnicianSchedule(technician.getProfile().getFirstName(), appointmentDate, timeslot);
         technicianBookings.add(technicianSchedule);
+        
     }
+
+    
 
     // Method to initialize and add technicians
     /*
