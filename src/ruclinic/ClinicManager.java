@@ -3,10 +3,12 @@ package ruclinic;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.Calendar;
+import java.util.HashSet;
 import java.util.Scanner;
 
 import util.CircularLinkedList;
 import util.Date;
+import util.Pair;
 import util.Sort;
 import util.Timeslot;
 
@@ -32,6 +34,7 @@ public class ClinicManager {
     private util.List<Appointment> appointments; // List to hold all appointments
     private util.List<Provider> providers; // Single list for all providers
     private CircularLinkedList technicianList;
+    private HashSet<Pair> technicianBookings = new HashSet<>();
 
     // Constructor
     public ClinicManager() {
@@ -120,7 +123,7 @@ public class ClinicManager {
      */
     public void run() {
         Scanner scanner = new Scanner(System.in);
-        System.out.println("Providers loaded to the list.");
+        System.out.println("Providers loaded to the list okok.");
         listProviders(); // Display providers at startup
         System.out.println("Rotation list for the technicians.");
         technicianList.printTechnicianList();
@@ -485,18 +488,20 @@ public class ClinicManager {
             technicianList.addAvailableRoom(imagingService, technician.getLocation().getCity(), timeslotObj);
 
             // Print confirmation
-            System.out.printf("%s %s %s %s %s [%s %s, %s %s][rate: $%.2f][%s] booked.%n",
-                    appointmentDate,
-                    timeslotObj,
-                    firstName,
-                    lastName,
-                    dobStr,
+            System.out.printf("%s %s %s %s %s [%s %s %s, %s, %s %s][rate: $%.2f][%s] booked.%n",
+                        appointmentDate,
+                         timeslotObj,
+                            firstName,
+                             lastName,
+                                 dobStr,
                     technician.getProfile().getFirstName(),
-                    technician.getProfile().getLastName(),
-                    technician.getLocation().getCity(),
-                    technician.getLocation().getCounty(),
-                    (double) technician.rate(),
-                    imagingService);
+                     technician.getProfile().getLastName(),
+                     technician.getProfile().getDob().toString(),
+                     technician.getLocation().getCity(),
+                 technician.getLocation().getCounty(),
+                 technician.getLocation().getZip(),
+                     (double)technician.rate(),
+                     imagingService.toUpperCase());
 
         } catch (Exception e) {
             System.out.println("Error processing the imaging appointment: " + e.getMessage());
@@ -787,6 +792,7 @@ public class ClinicManager {
         if (firstTechnician == null) {
             return null;
         }
+        System.out.println("Starting technician rotation for " + imagingService + " at " + timeslotObj);
 
         // Track rotation using technician identifiers
         String firstTechIdentifier = firstTechnician.getProfile().getFirstName() +
@@ -799,10 +805,19 @@ public class ClinicManager {
                 break;
             }
 
+            if (!isTechnicianAvailable(currentTech, timeslotObj)) {
+                System.out.println("Technician " + currentTech.getProfile().getFirstName() + " " + currentTech.getProfile().getLastName() + " is not available at " + timeslotObj);
+                continue; // Skip this technician and move to the next one
+            }
+            System.out.println("Checking technician: " + currentTech.getProfile().getFirstName() + " " + currentTech.getProfile().getLastName());
+
             String location = currentTech.getLocation().getCity();
             if (technicianList.isRoomAvailable(imagingService, location, timeslotObj)) {
+                System.out.println("Assigned technician: " + currentTech.getProfile().getFirstName() + " " + currentTech.getProfile().getLastName() + " for " + imagingService);
+                bookTechnican(currentTech, timeslotObj);
                 return currentTech;
             }
+           
 
             String currentTechIdentifier = currentTech.getProfile().getFirstName() +
                     currentTech.getProfile().getLastName();
@@ -814,6 +829,26 @@ public class ClinicManager {
         } while (true);
 
         return null;
+    }
+
+      private boolean isTechnicianAvailable(Technician technician, Timeslot timeslot) {
+        // Create a Pair object representing the technician's location and the timeslot
+        Pair technicianSchedule = new Pair(technician.getLocation().getCity(), timeslot);
+        
+        // Check if the technician is already booked at this timeslot
+        if (technicianBookings.contains(technicianSchedule)) {
+            System.out.println("Technician " + technician.getProfile().getFirstName() + " " + technician.getProfile().getLastName() + " is already booked at " + timeslot);
+            return false; // Technician is booked and not available
+        }
+    
+        // Technician is available if they are not booked at this timeslot
+        return true;
+    }
+
+    public void bookTechnican(Technician technician, Timeslot timeslot)
+    {
+        Pair technicianSchedule = new Pair(technician.getLocation().getCity(), timeslot);
+        technicianBookings.add(technicianSchedule);
     }
 
     // Method to initialize and add technicians

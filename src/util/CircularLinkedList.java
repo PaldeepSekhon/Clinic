@@ -14,6 +14,9 @@ public class CircularLinkedList {
     private HashSet<Pair> xrayRooms;
     private HashSet<Pair> ultrasoundRooms;
     private HashSet<Pair> catScanRooms;
+    private HashSet<Pair> allServicesRooms = new HashSet<>();
+    private HashSet<Pair> technicianBookings = new HashSet<>(); // Global set to track technician bookings
+
     // Constructor for CircularLinkedList
 
     public CircularLinkedList() {
@@ -141,6 +144,7 @@ public class CircularLinkedList {
     // Add available room
     public void addAvailableRoom(String imagingService, String location, Timeslot timeslot) {
         Pair roomPair = new Pair(location, timeslot);
+        allServicesRooms.add(roomPair);
         switch (imagingService.toUpperCase()) {
             case "XRAY":
                 xrayRooms.add(roomPair);
@@ -177,16 +181,26 @@ public class CircularLinkedList {
     // Check if room is available
     public boolean isRoomAvailable(String imagingService, String location, Timeslot timeslot) {
         Pair roomPair = new Pair(location, timeslot);
+        boolean isAvailable;
+       
         switch (imagingService.toUpperCase()) {
             case "XRAY":
-                return !xrayRooms.contains(roomPair); // Should return true if it contains, indicating it's booked
+                isAvailable= !xrayRooms.contains(roomPair); // Should return true if it contains, indicating it's booked
+                break;
             case "ULTRASOUND":
-                return !ultrasoundRooms.contains(roomPair);
+                isAvailable= !ultrasoundRooms.contains(roomPair);
+                break;
             case "CATSCAN":
-                return !catScanRooms.contains(roomPair);
+                isAvailable= !catScanRooms.contains(roomPair);
+                break;
             default:
                 throw new IllegalArgumentException("Invalid imaging service: " + imagingService);
         }
+        System.out.println("Room availability for " + imagingService + " at " + location + " for " + timeslot + ": " + isAvailable);
+        return isAvailable;
+
     }
+  
+    
 
 }
