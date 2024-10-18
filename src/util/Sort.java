@@ -70,39 +70,84 @@ public class Sort {
     public static void appointmentByCounty(util.List<Appointment> list) {
         for (int i = 0; i < list.size() - 1; i++) {
             for (int j = 0; j < list.size() - 1 - i; j++) {
-                boolean shouldSwap = false;
                 Appointment current = list.get(j);
                 Appointment next = list.get(j + 1);
+                boolean shouldSwap = false;
 
-                // Check if the current provider is a Doctor
-                if (current.getProvider() instanceof Doctor && next.getProvider() instanceof Doctor) {
-                    String countyCurrent = ((Doctor) current.getProvider()).getLocation().getCounty();
-                    String countyNext = ((Doctor) next.getProvider()).getLocation().getCounty();
+                // Compare counties
+                String countyCurrent = current.getProvider().getLocation().getCounty();
+                String countyNext = next.getProvider().getLocation().getCounty();
 
-                    // First, compare counties
-                    if (countyCurrent.compareTo(countyNext) > 0) {
+                // First, compare counties
+                if (countyCurrent.compareTo(countyNext) > 0) {
+                    shouldSwap = true;
+                } else if (countyCurrent.equals(countyNext)) {
+                    // If counties are the same, compare dates
+                    if (current.getDate().compareTo(next.getDate()) > 0) {
                         shouldSwap = true;
-                    } else if (countyCurrent.equals(countyNext)) {
-                        // If counties are the same, compare by date
-                        if (current.getDate().compareTo(next.getDate()) > 0) {
+                    } else if (current.getDate().equals(next.getDate())) {
+                        // If dates are the same, compare timeslots
+                        if (current.getTimeslot().compareTo(next.getTimeslot()) > 0) {
                             shouldSwap = true;
-                        } else if (current.getDate().equals(next.getDate())) {
-                            // If dates are the same, compare by timeslot
-                            if (current.getTimeslot().compareTo(next.getTimeslot()) > 0) {
+                        } else if (current.getTimeslot().equals(next.getTimeslot())) {
+                            // If timeslots are the same, compare first names of the providers
+                            String firstNameCurrent = current.getProvider().getProfile().getFirstName();
+                            String firstNameNext = next.getProvider().getProfile().getFirstName();
+                            if (firstNameCurrent.compareTo(firstNameNext) > 0) {
                                 shouldSwap = true;
                             }
                         }
                     }
-                } else {
-                    // If the provider is not a Doctor, you can decide how to handle it
-                    // For example, you might want to just skip this comparison
-                    continue;
                 }
 
+                // Perform the swap if necessary
                 if (shouldSwap) {
-                    // Swap the appointments in place
                     list.set(j, next);
                     list.set(j + 1, current);
+                }
+            }
+        }
+    }
+
+    public static void appointmentByDateTimeAndProvider(util.List<Appointment> list) {
+        for (int i = 0; i < list.size() - 1; i++) {
+            for (int j = 0; j < list.size() - 1 - i; j++) {
+                Appointment current = list.get(j);
+                Appointment next = list.get(j + 1);
+                boolean shouldSwap = false;
+
+                // Compare dates first
+                int dateComparison = current.getDate().compareTo(next.getDate());
+                if (dateComparison > 0) {
+                    shouldSwap = true;
+                } else if (dateComparison == 0) {
+                    // If dates are the same, compare timeslots
+                    int timeslotComparison = current.getTimeslot().compareTo(next.getTimeslot());
+                    if (timeslotComparison > 0) {
+                        shouldSwap = true;
+                    } else if (timeslotComparison == 0) {
+                        // If timeslots are the same, compare provider's last names
+                        String lastNameCurrent = current.getProvider().getProfile().getLastName();
+                        String lastNameNext = next.getProvider().getProfile().getLastName();
+                        int lastNameComparison = lastNameCurrent.compareTo(lastNameNext);
+                        if (lastNameComparison > 0) {
+                            shouldSwap = true;
+                        } else if (lastNameComparison == 0) {
+                            // If last names are the same, compare first names
+                            String firstNameCurrent = current.getProvider().getProfile().getFirstName();
+                            String firstNameNext = next.getProvider().getProfile().getFirstName();
+                            if (firstNameCurrent.compareTo(firstNameNext) > 0) {
+                                shouldSwap = true;
+                            }
+                        }
+                    }
+                }
+
+                // Perform the swap if necessary
+                if (shouldSwap) {
+                    Appointment temp = list.get(j);
+                    list.set(j, list.get(j + 1));
+                    list.set(j + 1, temp);
                 }
             }
         }

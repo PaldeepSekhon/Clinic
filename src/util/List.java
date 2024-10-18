@@ -55,7 +55,8 @@ public class List<E> implements Iterable<E> {
     }
 
     /**
-     * Adds a new element to the list. If the array is full, its capacity is increased.
+     * Adds a new element to the list. If the array is full, its capacity is
+     * increased.
      * 
      * @param element The element to add to the list.
      */
@@ -67,18 +68,21 @@ public class List<E> implements Iterable<E> {
     }
 
     /**
-     * Removes an element from the list. The array elements are shifted to fill the gap.
+     * Removes an element from the list. The array elements are shifted to fill the
+     * gap.
      * 
      * @param element The element to remove from the list.
      */
     public void remove(E element) {
-        int index = find(element);
+        int index = find(element); // Find the index of the element
         if (index != NOT_FOUND) {
             // Shift elements to the left to fill the gap
             for (int i = index; i < size - 1; i++) {
-                elements[i] = elements[i + 1];
+                elements[i] = elements[i + 1]; // Shift left
             }
             elements[--size] = null; // Clear the last element
+        } else {
+            throw new NoSuchElementException("Element not found: " + element);
         }
     }
 
@@ -118,7 +122,7 @@ public class List<E> implements Iterable<E> {
     /**
      * Replaces the element at the specified index with the provided element.
      * 
-     * @param index The index to replace.
+     * @param index   The index to replace.
      * @param element The new element.
      * @throws IndexOutOfBoundsException if the index is out of range.
      */
