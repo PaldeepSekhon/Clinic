@@ -1,5 +1,12 @@
 package util;
 
+/**
+ * Circular linked list for the providers
+ * 
+ * @author Paldeep Sekhon
+ * @author Aditya Ponni
+ */
+
 import ruclinic.Radiology;
 import ruclinic.Technician;
 

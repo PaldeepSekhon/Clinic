@@ -1,5 +1,12 @@
 package util;
 
+/**
+ * Represents timeslots for each appointment
+ * 
+ * @author Paldeep Sekhon
+ * @author Aditya Ponni
+ */
+
 public class Timeslot implements Comparable<Timeslot> {
     private int hour;
     private int minute;

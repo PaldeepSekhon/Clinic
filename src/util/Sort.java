@@ -1,5 +1,12 @@
 package util;
 
+/**
+ * Used to sort the appointments list 
+ * 
+ * @author Paldeep Sekhon
+ * @author Aditya Ponni
+ */
+
 import ruclinic.Appointment;
 import ruclinic.Provider;
 import ruclinic.Doctor;

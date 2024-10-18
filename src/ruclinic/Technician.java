@@ -1,5 +1,12 @@
 package ruclinic;
 
+/**
+ * Represnts Technicians and provides info about them
+ * 
+ * @author Paldeep Sekhon
+ * @author Aditya Ponni
+ */
+
 public class Technician extends Provider {
     private int ratePerVisit; // The technician's charging rate per visit
 

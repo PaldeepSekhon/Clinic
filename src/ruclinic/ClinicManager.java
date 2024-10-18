@@ -29,7 +29,8 @@ import util.Timeslot;
  * - PS (Display billing statements)
  * - Q (Quit the program)
  * 
- * @author Your Name
+ * @author Paldeep Sekhon
+ * @author Aditya Ponni
  */
 public class ClinicManager {
     private util.List<Appointment> appointments; // List to hold all appointments
